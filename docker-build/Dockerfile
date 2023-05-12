@@ -1,0 +1,35 @@
+FROM tobix/wine:stable
+MAINTAINER Tobias Gruetzmacher "tobias-docker@23.gs"
+
+ENV WINEDEBUG -all
+ENV WINEPREFIX /opt/wineprefix
+
+RUN mkdir -p /scripts
+COPY scripts/* /scripts/
+COPY SHA256SUMS.txt keys.gpg /tmp/helper/
+COPY mkuserwineprefix /opt/
+
+# Prepare environment
+RUN xvfb-run sh /scripts/wine-init.sh
+
+ARG PYTHON_VERSION=3.11.3
+ARG UPX_VERSION=3.96
+
+RUN umask 0 && cd /tmp/helper && \
+  curl -LOOO \
+    https://www.python.org/ftp/python/${PYTHON_VERSION}/python-${PYTHON_VERSION}-amd64.exe{,.asc} \
+    https://github.com/upx/upx/releases/download/v${UPX_VERSION}/upx-${UPX_VERSION}-win64.zip \
+  && \
+  gpgv --keyring ./keys.gpg python-${PYTHON_VERSION}-amd64.exe.asc python-${PYTHON_VERSION}-amd64.exe && \
+  sha256sum -c SHA256SUMS.txt && \
+  xvfb-run sh -c "\
+    wine python-${PYTHON_VERSION}-amd64.exe /quiet TargetDir=C:\\Python310 \
+      Include_doc=0 InstallAllUsers=1 PrependPath=1; \
+    wineserver -w" && \
+  unzip upx*.zip && \
+  mv -v upx*/upx.exe ${WINEPREFIX}/drive_c/windows/ && \
+  cd .. && rm -Rf helper
+
+RUN /scripts/wine-do.sh pip install --no-warn-script-location pyinstaller
+
+ENTRYPOINT ["/scripts/build.sh"]
