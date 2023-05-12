@@ -32,3 +32,7 @@ def main(repository, output):
     with ZipFile(output, "w") as zipfile:
         for path in paths:
             zipfile.write(os.path.join(repository, path), arcname=path)
+
+
+if __name__ == "__main__":
+    main()
