@@ -3,7 +3,7 @@ name = "agent"
 version = "0.1.0"
 description = ""
 authors = ["Enrico Z. Borba <enrico.borba@toptal.com>"]
-readme = "README.md"
+readme = "readme.md"
 packages = [{include = "agent"}]
 
 [tool.poetry.dependencies]
