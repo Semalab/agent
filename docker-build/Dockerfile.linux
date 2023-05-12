@@ -1,0 +1,7 @@
+FROM python:3.11-alpine
+
+RUN pip install pyinstaller
+
+RUN apk update && apk add --no-cache binutils
+
+ENTRYPOINT pyinstaller --clean --noconfirm --dist /code/dist/linux --workpath /tmp /code/agent/main.py

@@ -1,5 +1,4 @@
 FROM tobix/wine:stable
-MAINTAINER Tobias Gruetzmacher "tobias-docker@23.gs"
 
 ENV WINEDEBUG -all
 ENV WINEPREFIX /opt/wineprefix
@@ -9,7 +8,7 @@ COPY scripts/* /scripts/
 COPY SHA256SUMS.txt keys.gpg /tmp/helper/
 COPY mkuserwineprefix /opt/
 
-# Prepare environment
+# Prepare windows environment
 RUN xvfb-run sh /scripts/wine-init.sh
 
 ARG PYTHON_VERSION=3.11.3
@@ -32,4 +31,4 @@ RUN umask 0 && cd /tmp/helper && \
 
 RUN /scripts/wine-do.sh pip install --no-warn-script-location pyinstaller
 
-ENTRYPOINT ["/scripts/build.sh"]
+ENTRYPOINT /scripts/wine-do.sh pyinstaller --clean --noconfirm --dist /code/dist/windows --workpath /tmp /code/agent/main.py

@@ -1,1 +1,6 @@
+# build stuff
+/dist/
+/main.spec
+
+# python
 __pycache__/
