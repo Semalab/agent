@@ -11,9 +11,10 @@ linux)
   ;;
 
 windows)
-  docker build -t agent-py-windows-builder -f ./docker-build/Dockerfile.windows ./docker-build
-  docker run --mount type=bind,source=$PWD,target=/code agent-py-windows-builder \
-    /scripts/wine-do.sh /code/dist/windows/main.exe
+  docker build -t agent-windows-base -f ./docker/windows/Dockerfile.base ./
+  docker build -t agent-windows-runner -f ./docker/windows/Dockerfile.run ./
+  docker run --mount type=bind,source=$PWD/dist,target=/dist agent-windows-runner \
+    /scripts/wine-do.sh /dist/windows/main.exe "$@"
   ;;
 
 *)
