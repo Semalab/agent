@@ -1,7 +1,7 @@
 # Agent
 
 ## Usage
-Run the script using `poetry run agent`:
+Run the script using `poetry run cli`:
 ```
 Usage: agent [OPTIONS] REPOSITORY
 
