@@ -1,1 +1,5 @@
+# build outputs
+/dist/
+
+# python
 __pycache__/

@@ -4,7 +4,8 @@ from zipfile import ZipFile
 
 import click
 
-from agent.oss import Matcher
+import agent
+import agent.oss as oss
 
 
 @click.command()
@@ -20,7 +21,7 @@ def main(repository, output):
     """
     Run local scan on REPOSITORY and generate a zip file.
     """
-    matcher = Matcher()
+    matcher = oss.Matcher()
     paths = []
 
     for root, _, files in os.walk(repository):
@@ -32,3 +33,7 @@ def main(repository, output):
     with ZipFile(output, "w") as zipfile:
         for path in paths:
             zipfile.write(os.path.join(repository, path), arcname=path)
+
+
+if __name__ == "__main__":
+    main()
