@@ -22,8 +22,8 @@ class Dependencies(Strategy):
                     paths.append(abspath)
 
         for abssrc in paths:
-            relsrc = os.path.relpath(self.repository, abspath)
-            absdst = os.path.join(self.sema_output, relsrc)
+            relsrc = os.path.relpath(abssrc, start=self.repository)
+            absdst = os.path.join(self.output, relsrc)
 
             os.makedirs(os.path.dirname(absdst), exist_ok=True)
             shutil.copy(abssrc, absdst)
