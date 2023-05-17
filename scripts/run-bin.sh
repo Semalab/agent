@@ -6,7 +6,10 @@ shift
 case $OS in
 linux)
   docker build -t agent-linux-runner -f ./docker/linux/Dockerfile.run ./
-  docker run --mount type=bind,source=$PWD/dist,target=/dist agent-linux-runner \
+  docker run \
+    --mount type=bind,source=$PWD/dist,target=/dist \
+    --mount type=bind,source=$PWD,target=/src \
+    agent-linux-runner \
     /dist/linux/main "$@"
   ;;
 

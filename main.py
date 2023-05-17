@@ -5,7 +5,8 @@ from zipfile import ZipFile
 
 import click
 
-from agent.strategy import Dependencies
+from agent.directories import Directories
+from agent.strategy import Dependencies, DependencyCheck
 
 
 @click.command()
@@ -31,11 +32,14 @@ def main(repository, output, dependency_check):
     output = os.path.abspath(output)
 
     with tempfile.TemporaryDirectory() as tempdir:
-        dependencies = Dependencies(repository, tempdir)
-        dependencies.run()
+        strategies = [Dependencies()]
 
         if dependency_check:
-            print("depending on a lot of stuff!")
+            strategies.append(DependencyCheck(dependency_check))
+
+        directories = Directories(repository=repository, output=tempdir)
+        for strategy in strategies:
+            strategy.run(directories)
 
         output_basename, output_ext = os.path.splitext(output)
         output_ext = output_ext[1:]
