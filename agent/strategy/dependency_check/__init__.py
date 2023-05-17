@@ -17,11 +17,17 @@ class DependencyCheck:
         )
 
     def run(self, directories):
-        print(f"running under {os.name=} {platform.system=}")
+        match platform.system():
+            case "Linux":
+                bin = self.bin_linux
+            case "Windows":
+                bin = self.bin_windows
+            case system:
+                raise RuntimeError(f"Unsupported system '{system}'")
 
         subprocess.run(
             [
-                self.bin_linux,
+                bin,
                 "--format",
                 "CSV",
                 "--scan",
