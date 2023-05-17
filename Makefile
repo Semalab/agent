@@ -1,11 +1,13 @@
-.PHONY: clean linux windows
+.PHONY: all clean dist linux windows
+
+all: linux windows
 
 clean:
 	docker build -t agent-linux-runner -f ./docker/linux/Dockerfile.run ./
 	docker run --mount type=bind,source=$$PWD,target=/repo agent-linux-runner rm -rf /repo/dist
 
-dist: dist/
-	mkdir dist
+dist:
+	mkdir -p dist
 
 linux: dist
 	docker build -t agent-linux-builder -f ./docker/linux/Dockerfile.build ./
