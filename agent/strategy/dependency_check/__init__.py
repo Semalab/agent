@@ -1,4 +1,5 @@
 import os
+import platform
 import subprocess
 
 
@@ -16,12 +17,16 @@ class DependencyCheck:
         )
 
     def run(self, directories):
+        print(f"running under {os.name=} {platform.system=}")
+
         subprocess.run(
             [
                 self.bin_linux,
+                "--format",
+                "CSV",
                 "--scan",
                 directories.repository,
                 "--out",
-                os.path.join(directories.sema_output, "dependency-check.csv"),
+                os.path.join(directories.sema_output, "dependency_check"),
             ]
         )

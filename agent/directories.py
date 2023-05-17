@@ -11,7 +11,10 @@ class Directories:
 
     @property
     def sema_output(self):
-        return os.path.join(self.output, self.SEMA_DIR)
+        sema_output = os.path.join(self.output, self.SEMA_DIR)
+        os.makedirs(sema_output, exist_ok=True)
+
+        return sema_output
 
     def __post_init__(self):
         if not os.path.isabs(self.repository):
