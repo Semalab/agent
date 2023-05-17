@@ -16,8 +16,13 @@ from agent.strategy import Dependencies
     metavar="FILE",
     help="output zip filename",
 )
+@click.option(
+    "--dependency-check",
+    metavar="PATH",
+    help="path to dependency-check directory",
+)
 @click.argument("repository")
-def main(repository, output):
+def main(repository, output, dependency_check):
     """
     Run local scan on REPOSITORY and generate a zip file.
     """
@@ -29,6 +34,9 @@ def main(repository, output):
         dependencies = Dependencies(repository, tempdir)
         dependencies.run()
 
+        if dependency_check:
+            print("depending on a lot of stuff!")
+
         output_basename, output_ext = os.path.splitext(output)
         output_ext = output_ext[1:]
         if not output_ext:
@@ -39,4 +47,4 @@ def main(repository, output):
 
 
 if __name__ == "__main__":
-    main()
+    main(auto_envvar_prefix="AGENT")

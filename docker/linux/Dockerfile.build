@@ -2,7 +2,7 @@ FROM python:3.11-alpine
 
 WORKDIR /src
 
-RUN apk update && apk add --no-cache binutils curl
+RUN apk update && apk add --no-cache binutils
 
 # install poetry
 RUN pip install poetry==1.4.2
