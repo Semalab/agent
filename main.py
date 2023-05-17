@@ -15,12 +15,12 @@ from agent.strategy import Dependencies, DependencyCheck
     "--output",
     default="repository.zip",
     metavar="FILE",
-    help="output zip filename",
+    help="Output zip filename.",
 )
 @click.option(
     "--dependency-check",
     metavar="PATH",
-    help="path to dependency-check directory",
+    help="Path to dependency-check directory. Can also be set through the environment variable AGENT_DEPENDENCY_CHECK.",
 )
 @click.argument("repository")
 def main(repository, output, dependency_check):
