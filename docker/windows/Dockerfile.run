@@ -1,1 +1,3 @@
 FROM agent-windows-base
+
+# TODO(enricozb): install java under wine

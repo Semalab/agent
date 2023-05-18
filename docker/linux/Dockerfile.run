@@ -1,1 +1,19 @@
 FROM alpine:3.18
+
+RUN apk update && apk add --no-cache curl unzip
+
+# ---------- dependencies ----------
+WORKDIR /dependencies
+
+# dependency_check: https://github.com/jeremylong/DependencyCheck
+# from curl -s https://jeremylong.github.io/DependencyCheck/current.txt
+ARG DEPENDENCY_CHECK_VERSION=8.2.1
+
+RUN apk add openjdk11
+
+RUN curl -L \
+  https://github.com/jeremylong/DependencyCheck/releases/download/v${DEPENDENCY_CHECK_VERSION}/dependency-check-${DEPENDENCY_CHECK_VERSION}-release.zip \
+  --output dependency-check.zip
+
+RUN unzip dependency-check.zip
+ENV AGENT_DEPENDENCY_CHECK=/dependencies/dependency-check
