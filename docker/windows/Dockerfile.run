@@ -1,3 +1,5 @@
 FROM agent-windows-base
 
 # TODO(enricozb): install java under wine
+# TODO(enricozb): install dependency-check
+# TODO(enricozb): install scancode

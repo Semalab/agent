@@ -4,9 +4,10 @@ import tempfile
 from zipfile import ZipFile
 
 import click
+from click import ClickException
 
 from agent.directories import Directories
-from agent.strategy import Dependencies, DependencyCheck
+from agent.strategy import Dependencies, DependencyCheck, Scancode
 
 
 @click.command()
@@ -22,11 +23,19 @@ from agent.strategy import Dependencies, DependencyCheck
     metavar="PATH",
     help="Path to dependency-check directory. Can also be set through the environment variable AGENT_DEPENDENCY_CHECK.",
 )
+@click.option(
+    "--scancode",
+    metavar="PATH",
+    help="Path to scancode directory. Can also be set through the environment variable AGENT_SCANCODE.",
+)
 @click.argument("repository")
-def main(repository, output, dependency_check):
+def main(repository, output, dependency_check, scancode):
     """
     Run local scan on REPOSITORY and generate a zip file.
     """
+
+    if not os.path.isdir(repository):
+        raise ClickException(f"directory '{repository}' does not exist")
 
     repository = os.path.abspath(repository)
     output = os.path.abspath(output)
@@ -36,6 +45,9 @@ def main(repository, output, dependency_check):
 
         if dependency_check:
             strategies.append(DependencyCheck(dependency_check))
+
+        if scancode:
+            strategies.append(Scancode(scancode))
 
         directories = Directories(repository=repository, output=tempdir)
         for strategy in strategies:

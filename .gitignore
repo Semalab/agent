@@ -1,5 +1,9 @@
 # build outputs
 /dist/
+/out/
+
+# testing data
+/test-repos/
 
 # python
 __pycache__/
