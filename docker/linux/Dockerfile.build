@@ -1,8 +1,8 @@
-FROM python:3.11-alpine
+FROM python:3.11-buster
 
 WORKDIR /src
 
-RUN apk update && apk add --no-cache binutils
+# RUN apk update && apk add --no-cache binutils
 
 # install poetry
 RUN pip install poetry==1.4.2
