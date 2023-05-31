@@ -7,13 +7,14 @@ shift
 
 case $OS in
 linux)
+  repo_name=$(basename "$SRC")
   docker build -t agent-linux-runner -f ./docker/linux/Dockerfile.run ./
   docker run \
     --mount type=bind,source="$PWD"/dist,target=/dist,readonly \
     --mount type=bind,source="$PWD"/out,target=/out \
     --mount type=bind,source="$PWD/$SRC",target=/src,readonly \
     agent-linux-runner \
-    /dist/linux/main /src --output /out/test.zip "$@"
+    /dist/linux/main /src --output "/out/$repo_name.zip" "$@"
   ;;
 
 windows)
