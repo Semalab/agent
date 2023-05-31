@@ -48,20 +48,23 @@ def main(repository, output, dependency_check, scancode):
     with tempfile.TemporaryDirectory() as tempdir:
         repo_type = detect_version_control_system(repository)
         click.echo(f"Given repo is {repo_type} repo")
-        convertor = VCSConverter(repository, repo_type, tempdir)
-        repository = convertor.convert()
 
-        strategies = [Dependencies()]
+        with tempfile.TemporaryDirectory() as repo_tempdir:
+            # repo_tempdir is used only for non-git repos.
+            convertor = VCSConverter(repository, repo_type, repo_tempdir)
+            repository = convertor.convert()
 
-        if dependency_check:
-            strategies.append(DependencyCheck(dependency_check))
+            strategies = [Dependencies()]
 
-        if scancode:
-            strategies.append(Scancode(scancode))
+            if dependency_check:
+                strategies.append(DependencyCheck(dependency_check))
 
-        directories = Directories(repository=repository, output=tempdir)
-        for strategy in strategies:
-            strategy.run(directories)
+            if scancode:
+                strategies.append(Scancode(scancode))
+
+            directories = Directories(repository=repository, output=tempdir)
+            for strategy in strategies:
+                strategy.run(directories)
 
         output_basename, output_ext = os.path.splitext(output)
         output_basename = create_output_basename(output_basename, ts_now)
