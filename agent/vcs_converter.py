@@ -27,15 +27,12 @@ class VCSConverter:
         """
         click.echo("Initiated SVN to GIT conversion")
 
-        # Create a temp folder at location temp_path
-        temp_path = os.path.join(os.path.dirname(self.tempdir), "temp")
-        os.makedirs(temp_path, exist_ok=True)
-        click.echo(f"temp path created at {temp_path}")
+        click.echo(f"temp path created at {self.tempdir}")
 
-        svn_exported_path = os.path.join(temp_path, f"{self.repo_name}_exported")
+        svn_exported_path = os.path.join(self.tempdir, f"{self.repo_name}_exported")
 
         dummy_repo_name = f"{self.repo_name}_dummy_svn"
-        svn_repo_path = os.path.join(temp_path, dummy_repo_name)
+        svn_repo_path = os.path.join(self.tempdir, dummy_repo_name)
 
         # Create a dummy repo
         self.run_command(f"svnadmin create {svn_repo_path}")
@@ -55,7 +52,7 @@ class VCSConverter:
         )
 
         # Convert to git
-        destination_folder = os.path.join(temp_path, f"{self.repo_name}_git")
+        destination_folder = os.path.join(self.tempdir, f"{self.repo_name}_git")
         self.run_command(f"git svn clone {remote_repo_url} {destination_folder}")
 
         click.echo(f"Converted git is stored at {destination_folder}")
