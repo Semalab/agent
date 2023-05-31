@@ -7,7 +7,6 @@ shift
 
 case $OS in
 linux)
-  repo_path=$(dirname "$SRC")
   repo_name=$(basename "$SRC")
   docker build -t agent-linux-runner -f ./docker/linux/Dockerfile.run ./
   docker run \
