@@ -47,7 +47,7 @@ def main(repository: Path, output: Path):
 
         strategies = [
             Dependencies(),
-            # DependencyCheck(),
+            DependencyCheck(),
             Scancode(),
         ]
 
