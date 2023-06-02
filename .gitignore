@@ -3,7 +3,7 @@
 /out/
 
 # testing data
-/test-repos/
+/test-data/
 
 # python
 __pycache__/
