@@ -52,7 +52,8 @@ class Scancode:
     ]
 
     def run(self, directories):
-        os.makedirs(os.path.join(directories.sema_output, "scancode"), exist_ok=True)
+        scancode_dir = directories.sema_output / "scancode"
+        scancode_dir.mkdir()
 
         ignore = flatten([["--ignore", pattern] for pattern in Scancode.IGNORE])
 
@@ -60,9 +61,7 @@ class Scancode:
             [
                 "scancode",
                 "--csv",
-                os.path.join(
-                    directories.sema_output, "scancode", "scancode-output.csv"
-                ),
+                scancode_dir / "scancode-output.csv",
                 *Scancode.ARGS,
                 *ignore,
                 directories.repository,

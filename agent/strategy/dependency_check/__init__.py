@@ -17,6 +17,6 @@ class DependencyCheck:
                 "--scan",
                 directories.repository,
                 "--out",
-                os.path.join(directories.sema_output, "dependency_check"),
+                directories.sema_output / "dependency_check",
             ]
         )
