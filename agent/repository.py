@@ -50,7 +50,7 @@ class Repository:
                 )
 
     @classmethod
-    def svn_to_git(repository_svn: Path) -> Path:
+    def svn_to_git(cls, repository_svn: Path) -> Path:
         click.echo(f"converting svn repository '{repository_svn}' to git")
         repository_git = Path(tempfile.mkdtemp(suffix=f"{repository_svn.name}_git"))
 
