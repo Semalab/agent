@@ -12,4 +12,4 @@ docker build -t sema-agent -f ./docker/Dockerfile ./
 docker run \
   --mount type=bind,source="$REPO",target=/repo,readonly \
   --mount type=bind,source="$OUT",target=/out \
-  sema-agent --repository /repo --output /out "$@"
+  sema-agent --repository /repo --output /out
