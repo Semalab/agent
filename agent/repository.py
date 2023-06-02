@@ -54,8 +54,14 @@ class Repository:
         click.echo(f"converting svn repository '{repository_svn}' to git")
         repository_git = Path(tempfile.mkdtemp(suffix=f"{repository_svn.name}_git"))
 
+        svn_info = subprocess.run(
+            ["svn", "info", "--show-item", "repos-root-url", repository_svn],
+            check=True,
+            capture_output=True,
+        )
+
         subprocess.run(
-            ["git", "svn", "clone", f"file://{repository_svn}", repository_git],
+            ["git", "svn", "clone", svn_info.stdout.strip(), repository_git],
             check=True,
         )
 
