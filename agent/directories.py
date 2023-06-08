@@ -1,18 +1,19 @@
 import os
 from dataclasses import dataclass
+from pathlib import Path
 
 
 @dataclass
 class Directories:
     SEMA_DIR = ".sema"
 
-    repository: str
-    output: str
+    repository: Path
+    output: Path
 
     @property
     def sema_output(self):
-        sema_output = os.path.join(self.output, self.SEMA_DIR)
-        os.makedirs(sema_output, exist_ok=True)
+        sema_output = self.output / self.SEMA_DIR
+        sema_output.mkdir(exist_ok=True)
 
         return sema_output
 
