@@ -1,4 +1,5 @@
 from agent.strategy.quality.linters.cppcheck import CppCheck
+from agent.strategy.quality.linters.flawfinder import FlawFinder
 
 
 class Linters:
@@ -6,7 +7,10 @@ class Linters:
     runs a variety of linters on the given repository
     """
 
-    LINTERS = [CppCheck()]
+    LINTERS = [
+        CppCheck(),
+        FlawFinder(),
+    ]
 
     def run(self, directories):
         linters_dir = directories.sema_output / "linters"

@@ -29,6 +29,7 @@ RUN pip install scancode-toolkit==${SCANCODE_VERSION}
 
 # ---------- linters ----------
 RUN apt-get -y install cppcheck
+RUN pip install flawfinder
 
 WORKDIR /src
 
