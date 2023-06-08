@@ -11,6 +11,7 @@ from click import ClickException
 from agent.directories import Directories
 from agent.repository import Repository
 from agent.strategy.oss import Dependencies, DependencyCheck, Scancode
+from agent.strategy.quality import Linters
 
 
 @click.command()
@@ -49,6 +50,7 @@ def main(repository: Path, output: Path):
             Dependencies(),
             DependencyCheck(),
             Scancode(),
+            Linters(),
         ]
 
         directories = Directories(repository=repository.path, output=archive_root)
