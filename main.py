@@ -10,7 +10,7 @@ from click import ClickException
 
 from agent.directories import Directories
 from agent.repository import Repository
-from agent.strategy import Dependencies, DependencyCheck, Scancode
+from agent.strategy.oss import Dependencies, DependencyCheck, Scancode
 
 
 @click.command()
