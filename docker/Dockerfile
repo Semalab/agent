@@ -4,7 +4,7 @@ RUN apt-get -y update && apt-get -y upgrade
 RUN apt-get -y install curl unzip subversion git-svn
 
 
-# ---------- dependencies ----------
+# ---------- oss dependencies ----------
 WORKDIR /dependencies
 
 # dependency_check: https://github.com/jeremylong/DependencyCheck
@@ -26,6 +26,9 @@ RUN curl -L \
 ARG SCANCODE_VERSION=31.2.6
 
 RUN pip install scancode-toolkit==${SCANCODE_VERSION}
+
+# ---------- linters ----------
+RUN apt-get -y install cppcheck
 
 WORKDIR /src
 
