@@ -9,11 +9,11 @@ contain any source code.
 
 1. Docker must be installed. If using Windows, install [Docker Desktop][1].
 2. Currently, the agent only supports repositories versioned with Git.
-  - If your repository is versioned with SVN, the agent will attempt to convert
-    this to a git repository. The agent will attempt to access your SVN repository
-    using [`git svn`][2].
-  - If your repository is versioned with something other than Git or SVN, you must
-    first convert it to Git.
+   - If your repository is versioned with SVN, the agent will attempt to convert
+     this to a git repository. The agent will attempt to access your SVN repository
+     using [`git svn`][2].
+   - If your repository is versioned with something other than Git or SVN, you must
+       first convert it to Git.
 
 ## Usage
 
