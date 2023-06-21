@@ -17,7 +17,7 @@ contain any source code.
 
 ## Usage
 
-Clone your repository to a local directory, then dependending on your operating
+Clone your repository to a local directory then, dependending on your operating
 system, follow one of the following instructions:
 
 ### macOS / Linux
