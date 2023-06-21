@@ -1,7 +1,7 @@
 import os
 import shutil
 
-from agent.strategy.dependencies.matcher import Matcher
+from agent.strategy.oss.dependencies.matcher import Matcher
 
 
 class Dependencies:
