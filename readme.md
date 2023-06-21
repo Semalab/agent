@@ -1,4 +1,4 @@
-# Agent
+# Sema Agent
 
 The agent scans a provided repository and generates a `.zip` file with analytics
 that must be sent to Sema to be analyzed further.  This file may contain things
@@ -25,7 +25,7 @@ contain any source code.
 ```
 
 ### Windows
-> **Note**
+> **Warning**
 > This script doesn't actually exist yet, but this is likely what the invocation
 > will look like:
 ```
