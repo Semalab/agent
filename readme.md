@@ -1,26 +1,36 @@
 # Agent
 
+The agent scans a provided repository and generates a `.zip` file with analytics
+that must be sent to Sema to be analyzed further.  This file may contain things
+such as potential CVEs, dependencies, licenses, etc. This file does not, however,
+contain any source code.
+
+## Prerequisites
+
+1. Docker must be installed. If using Windows, install [Docker Desktop][1].
+2. Currently, the agent only supports repositories versioned with Git.
+  - If your repository is versioned with SVN, the agent will attempt to convert
+    this to a git repository. The agent will attempt to access your SVN repository
+    using [`git svn`][2].
+  - If your repository is versioned with something other than Git or SVN, you must
+    first convert it to Git.
+
 ## Usage
-Run the script using `poetry run cli`:
+
+1. Clone your repository to a local directory.
+
+### macOS / Linux
 ```
-Usage: agent [OPTIONS] REPOSITORY
-
-  Run local scan on REPOSITORY.
-
-Options:
-  -o, --output TEXT  output zip filename
-  --help             Show this message and exit.
+./scripts/agent.sh <repository> <output-directory>
 ```
 
-## Building
-To build for windows and/or linux.
+### Windows
+> **Note**
+> This script doesn't actually exist yet, but this is likely what the invocation
+> will look like:
 ```
-make windows
-make linux
+./scripts/agent.ps1 <repository> <output-directory>
 ```
-This will produce executables that appear under `dist/`. To test these executables
-use `./scripts/run-bin.sh`:
-```
-./scripts/run-bin.sh windows <args>
-./scripts/run-bin.sh linux <args>
-```
+
+[1]: https://www.docker.com/products/docker-desktop/
+[2]: https://git-scm.com/docs/git-svn
