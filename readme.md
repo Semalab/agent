@@ -22,15 +22,12 @@ system, follow one of the following instructions:
 
 ### macOS / Linux
 ```
-./scripts/agent.sh <repository> <output-directory>
+./scripts/agent.sh [--help] <repository> <output-directory>
 ```
 
 ### Windows
-> **Warning**
-> This script doesn't actually exist yet, but this is likely what the invocation
-> will look like:
 ```
-./scripts/agent.ps1 <repository> <output-directory>
+./scripts/agent.ps1 [--help] <repository> <output-directory>
 ```
 
 [1]: https://www.docker.com/products/docker-desktop/
