@@ -37,6 +37,11 @@ check-usage() {
   done
 }
 
+abspath() {
+  cd "$1"
+  pwd -P
+}
+
 main() {
   REPO="$1"
   OUT="$2"
@@ -46,8 +51,8 @@ main() {
   docker build -t sema-agent -f ./docker/Dockerfile ./
 
   docker run \
-    --mount type=bind,source="$(realpath $REPO)",target=/repo,readonly \
-    --mount type=bind,source="$(realpath $OUT)",target=/out \
+    --mount type=bind,source="$(abspath $REPO)",target=/repo,readonly \
+    --mount type=bind,source="$(abspath $OUT)",target=/out \
     sema-agent --repository /repo --output /out
 }
 
