@@ -29,7 +29,7 @@ system, follow one of the following instructions:
 1. Start Docker Desktop. This can be done by double-clicking the Docker Desktop icon.
    It must be running in the background.
 
-2. Run the following command:
+2. Open **PowerShell** and run the following command:
 ```
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned; ./scripts/agent.ps1 [--help] <repository> <output-directory>
 ```
