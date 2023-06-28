@@ -22,7 +22,7 @@ system, follow one of the following instructions:
 
 ### macOS / Linux
 ```
-./scripts/agent.sh [--help] <repository> <output-directory>
+bash ./scripts/agent.sh [--help] <repository> <output-directory>
 ```
 
 ### Windows
