@@ -26,8 +26,12 @@ system, follow one of the following instructions:
 ```
 
 ### Windows
+1. Start Docker Desktop. This can be done by double-clicking the Docker Desktop icon.
+   It must be running in the background.
+
+2. Run the following command:
 ```
-./scripts/agent.ps1 [--help] <repository> <output-directory>
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned; ./scripts/agent.ps1 [--help] <repository> <output-directory>
 ```
 
 [1]: https://www.docker.com/products/docker-desktop/
