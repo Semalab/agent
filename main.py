@@ -48,8 +48,8 @@ def main(repository: Path, output: Path):
 
         strategies = [
             Dependencies(),
-            # DependencyCheck(),
-            # Scancode(),
+            DependencyCheck(),
+            Scancode(),
             Linters(),
             Linguist(),
         ]
