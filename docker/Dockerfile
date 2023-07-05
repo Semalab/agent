@@ -27,6 +27,12 @@ ARG SCANCODE_VERSION=31.2.6
 
 RUN pip install scancode-toolkit==${SCANCODE_VERSION}
 
+# linguist: https://github.com/github-linguist/linguist
+ARG LINGUIST_VERSION=7.25
+
+RUN apt-get -y install build-essential cmake curl jq libicu-dev zlib1g-dev libcurl4-openssl-dev libssl-dev pkg-config ruby-dev
+RUN gem install github-linguist:${LINGUIST_VERSION}
+
 # ---------- linters ----------
 RUN apt-get -y install cppcheck
 RUN pip install flawfinder

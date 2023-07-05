@@ -11,7 +11,7 @@ from click import ClickException
 from agent.directories import Directories
 from agent.repository import Repository
 from agent.strategy.oss import Dependencies, DependencyCheck, Scancode
-from agent.strategy.quality import Linters
+from agent.strategy.quality import Linguist, Linters
 
 
 @click.command()
@@ -51,24 +51,35 @@ def main(repository: Path, output: Path):
             DependencyCheck(),
             Scancode(),
             Linters(),
+            Linguist(),
         ]
 
         directories = Directories(repository=repository.path, output=archive_root)
         for strategy in strategies:
             strategy.run(directories)
 
-        make_archive(output=output, repo_name=repository.name, root=archive_root)
+        archive_name = make_archive(
+            output=output, repo_name=repository.name, root=archive_root
+        )
+
+        click.echo(
+            f"A zip file has been created at '{archive_name}.zip'. Please send this file to "
+            "support@semasoftware.com to complete the analysis."
+        )
 
 
-def make_archive(output: Path, repo_name: str, root: Path) -> str:
+def make_archive(output: Path, repo_name: str, root: Path) -> Path:
     """
     create an archive of `directory` in `{output}/{repo_name}_timestamp.zip`
     """
 
     timestamp = datetime.utcnow().strftime("%Y-%m-%d_%H-%M-%S")
     archive_name = f"{repo_name}_{timestamp}"
+    archive_dest = output / archive_name
 
-    shutil.make_archive(output / archive_name, "zip", root)
+    shutil.make_archive(archive_dest, "zip", root)
+
+    return archive_name
 
 
 if __name__ == "__main__":
