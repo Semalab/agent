@@ -71,27 +71,31 @@ class Linguist:
             )
 
     def wc(self, directories, linguist_dir):
-        wc_data = {}
-
-        for path in self.files(directories, linguist_dir):
-            output = subprocess.run(
-                ["wc", path],
-                cwd=directories.repository,
-                capture_output=True,
-                check=True,
-            )
-
-            lines, words, bytes = map(float, output.stdout.split()[0:3])
-
-            wc_data[path] = {
-                "lines": lines,
-                "words": words,
-                "bytes": bytes,
-            }
-
         with open(linguist_dir / "wc", "w") as wc_file:
-            for path, data in wc_data.items():
+            for path in self.files(directories, linguist_dir):
+                output = subprocess.run(
+                    ["wc", path],
+                    cwd=directories.repository,
+                    capture_output=True,
+                    check=True,
+                )
+
+                lines, words, bytes = map(int, output.stdout.split()[0:3])
+
                 wc_file.write(f"{path}:{lines}:{words}:{bytes}\n")
 
     def mime(self, directories, linguist_dir):
-        pass
+        with open(linguist_dir / "mime", "w") as mime_file:
+            for path in self.files(directories, linguist_dir):
+                output = subprocess.run(
+                    ["file", "-i", path],
+                    cwd=directories.repository,
+                    capture_output=True,
+                    check=True,
+                )
+
+                *_, mime, charset = output.stdout.split()
+                mime = mime.strip(b";").decode()
+                charset = charset.split(b"=")[-1].decode()
+
+                mime_file.write(f"{path}:{mime}:{charset}\n")
