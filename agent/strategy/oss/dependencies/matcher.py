@@ -29,6 +29,7 @@ PATTERNS = {
         "build.gradle.kts",
         "settings.gradle",
         "settings.gradle.kts",
+        "minimumRuntimeVersion",
     ],
 }
 
