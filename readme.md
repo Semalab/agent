@@ -34,5 +34,10 @@ bash ./scripts/agent.sh [--help] <repository> <output-directory>
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned; ./scripts/agent.ps1 [--help] <repository> <output-directory>
 ```
 
+### Email Generated Zip File
+After running the OS-specific instructions, a zip file will have been created under the specified output-directory.
+Please send this file to [customers@semasoftware.com](mailto:customers@semasoftware.com) to complete the analysis.
+
+
 [1]: https://www.docker.com/products/docker-desktop/
 [2]: https://git-scm.com/docs/git-svn

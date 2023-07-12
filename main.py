@@ -64,7 +64,7 @@ def main(repository: Path, output: Path):
 
         click.echo(
             f"A zip file has been created at '{archive_name}.zip'. Please send this file to "
-            "support@semasoftware.com to complete the analysis."
+            "customers@semasoftware.com to complete the analysis."
         )
 
 
