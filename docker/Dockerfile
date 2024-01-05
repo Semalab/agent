@@ -1,22 +1,29 @@
-FROM python:3.11-buster
+FROM python:3.11-bookworm
 
-RUN apt-get -y update && apt-get -y upgrade
-RUN apt-get -y install curl unzip subversion git-svn
+SHELL ["/bin/bash", "-c"]
 
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        curl \
+        unzip \
+        subversion \
+        git-svn \
+        ruby-dev \
+        cmake \
+        openjdk-17-jre-headless \
+        cppcheck \
+    && rm -rf /var/lib/apt/lists/*
 
 # ---------- oss dependencies ----------
 WORKDIR /dependencies
 
 # dependency_check: https://github.com/jeremylong/DependencyCheck
-ARG DEPENDENCY_CHECK_VERSION=8.2.1
-
-RUN apt-get -y install openjdk-11-jre-headless
-
-RUN curl -L \
-    https://github.com/jeremylong/DependencyCheck/releases/download/v${DEPENDENCY_CHECK_VERSION}/dependency-check-${DEPENDENCY_CHECK_VERSION}-release.zip \
-    --output dependency-check.zip \
+ARG DEPENDENCY_CHECK_VERSION=9.0.7
+RUN curl -Ls \
+        https://github.com/jeremylong/DependencyCheck/releases/download/v${DEPENDENCY_CHECK_VERSION}/dependency-check-${DEPENDENCY_CHECK_VERSION}-release.zip \
+        --output dependency-check.zip \
     && unzip dependency-check.zip \
-    && echo '#!/bin/bash\n\
+    && echo -e '#!/bin/bash\n\
       cd /dependencies/dependency-check/bin/\n\
       ./dependency-check.sh "$@"\n\
     ' > /usr/local/bin/dependency-check \
@@ -24,17 +31,13 @@ RUN curl -L \
 
 # scancode: https://github.com/nexB/scancode-toolkit
 ARG SCANCODE_VERSION=31.2.6
-
 RUN pip install scancode-toolkit==${SCANCODE_VERSION}
 
 # linguist: https://github.com/github-linguist/linguist
-ARG LINGUIST_VERSION=7.25
-
-RUN apt-get -y install build-essential cmake curl jq libicu-dev zlib1g-dev libcurl4-openssl-dev libssl-dev pkg-config ruby-dev
+ARG LINGUIST_VERSION=7.28
 RUN gem install github-linguist:${LINGUIST_VERSION}
 
 # ---------- linters ----------
-RUN apt-get -y install cppcheck
 RUN pip install flawfinder
 
 WORKDIR /src
