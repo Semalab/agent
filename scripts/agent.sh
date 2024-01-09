@@ -75,6 +75,8 @@ abspath() {
 main() {
   check-usage "$@"
 
+  docker pull ghcr.io/semalab/agent:$TAG
+
   docker run \
     --mount type=bind,source="$(abspath $REPO)",target=/repo,readonly \
     --mount type=bind,source="$(abspath $OUT)",target=/out \
