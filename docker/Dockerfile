@@ -28,7 +28,8 @@ RUN curl -Ls \
       ./dependency-check.sh "$@"\n\
     ' > /usr/local/bin/dependency-check \
     && chmod +x /usr/local/bin/dependency-check \
-    && rm dependency-check.zip
+    && rm dependency-check.zip \
+    && dependency-check --updateonly
 
 # scancode: https://github.com/nexB/scancode-toolkit
 ARG SCANCODE_VERSION=32.0.8
@@ -37,10 +38,10 @@ RUN curl -Ls \
         --output scancode.tar.gz \
     && mkdir scancode \
     && tar -xf scancode.tar.gz -C scancode --strip-components=1 \
-    && cd scancode \
-    && ./configure \
     && ln -s /dependencies/scancode/scancode /usr/local/bin/scancode \
-    && rm ../scancode.tar.gz
+    && rm scancode.tar.gz \
+    && cd scancode \
+    && ./configure
 
 # linguist: https://github.com/github-linguist/linguist
 ARG LINGUIST_VERSION=7.28
