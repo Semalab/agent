@@ -52,7 +52,7 @@ RUN pip install flawfinder
 
 WORKDIR /src
 
-RUN pip install poetry==1.4.2
+RUN pip install poetry==1.7.1
 COPY main.py readme.md pyproject.toml poetry.lock ./
 COPY agent/ agent/
 
