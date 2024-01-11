@@ -7,7 +7,8 @@ contain any source code.
 
 ## Prerequisites
 
-1. Docker must be installed. If using Windows, install [Docker Desktop][1].
+1. Docker must be installed and running. If using Windows, install [Docker Desktop][1]
+   and configure it to use Linux containers.
 2. Currently, the agent only supports repositories versioned with Git.
    - If your repository is versioned with SVN, the agent will attempt to convert
      this to a git repository. The agent will attempt to access your SVN repository
@@ -17,25 +18,27 @@ contain any source code.
 
 ## Usage
 
-Clone your repository to a local directory then, dependending on your operating
-system, follow one of the following instructions:
-
-### macOS / Linux
-```
-bash ./scripts/agent.sh [--help] <repository> <output-directory>
+Clone your repository to a local directory:
+```sh
+git clone https://github.com/Semalab/agent.git
 ```
 
-### Windows
-1. Start Docker Desktop. This can be done by double-clicking the Docker Desktop icon.
-   It must be running in the background.
-
-2. Open **PowerShell** and run the following command:
+Run agent:
+```sh
+./scripts/agent [-h] <repository> <output-directory>
 ```
-Set-ExecutionPolicy -ExecutionPolicy RemoteSigned; ./scripts/agent.ps1 [--help] <repository> <output-directory>
+This command will work on macOS, Linux, and Windows (in PowerShell.) If using
+`cmd`/Command Prompt on Windows, replace the slashes (`/`) with backslashes (`\`).
+
+Use the `-h` argument for help.
+
+On Windows, if you see an error about being unable to run agent.ps1 because of the execution policy, run this command before the agent script:
+```powershell
+Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope Process
 ```
 
 ### Email Generated Zip File
-After running the OS-specific instructions, a zip file will have been created under the specified output-directory.
+After running these commands, a zip file will have been created under the specified output directory.
 Please send this file to [customers@semasoftware.com](mailto:customers@semasoftware.com) to complete the analysis.
 
 
