@@ -32,6 +32,11 @@ This command will work on macOS, Linux, and Windows (in PowerShell.) If using
 
 Use the `-h` argument for help.
 
+On Windows, if you see an error about being unable to run agent.ps1 because of the execution policy, run this command before the agent script:
+```powershell
+Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope Process
+```
+
 ### Email Generated Zip File
 After running these commands, a zip file will have been created under the specified output directory.
 Please send this file to [customers@semasoftware.com](mailto:customers@semasoftware.com) to complete the analysis.
