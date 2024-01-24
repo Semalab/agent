@@ -84,7 +84,7 @@ class Linguist:
 
                 # wc_file.write(f"{lines} {words} {bytes} {path}\n")
 
-                wc_file.write(output.stdout)
+                wc_file.write(output.stdout.decode("utf-8"))
 
     def mime(self, directories, linguist_dir):
         with open(linguist_dir / "mime", "w") as mime_file:
@@ -99,4 +99,4 @@ class Linguist:
                 # mime = mime.strip(b";").decode()
                 # charset = charset.split(b"=")[-1].decode()
                 # mime_file.write(f"{path}:{mime}:{charset}\n")
-                mime_file.write(output.stdout)
+                mime_file.write(output.stdout.decode("utf-8"))
