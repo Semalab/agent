@@ -98,5 +98,5 @@ class Linguist:
                 # *_, mime, charset = output.stdout.split()
                 # mime = mime.strip(b";").decode()
                 # charset = charset.split(b"=")[-1].decode()
-                mime_file.write(f"{path}:{mime}:{charset}\n")
+                # mime_file.write(f"{path}:{mime}:{charset}\n")
                 mime_file.write(output.stdout)
