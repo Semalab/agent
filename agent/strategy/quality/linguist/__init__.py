@@ -80,9 +80,11 @@ class Linguist:
                     check=True,
                 )
 
-                lines, words, bytes = map(int, output.stdout.split()[0:3])
+                # lines, words, bytes = map(int, output.stdout.split()[0:3])
 
-                wc_file.write(f"{path}:{lines}:{words}:{bytes}\n")
+                # wc_file.write(f"{lines} {words} {bytes} {path}\n")
+
+                wc_file.write(output.stdout)
 
     def mime(self, directories, linguist_dir):
         with open(linguist_dir / "mime", "w") as mime_file:
@@ -93,9 +95,8 @@ class Linguist:
                     capture_output=True,
                     check=True,
                 )
-
-                *_, mime, charset = output.stdout.split()
-                mime = mime.strip(b";").decode()
-                charset = charset.split(b"=")[-1].decode()
-
+                # *_, mime, charset = output.stdout.split()
+                # mime = mime.strip(b";").decode()
+                # charset = charset.split(b"=")[-1].decode()
                 mime_file.write(f"{path}:{mime}:{charset}\n")
+                mime_file.write(output.stdout)
