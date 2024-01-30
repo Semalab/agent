@@ -34,7 +34,7 @@ RUN curl -Ls \
 # scancode: https://github.com/nexB/scancode-toolkit
 ARG SCANCODE_VERSION=30.1.0
 RUN curl -Ls \
-        https://github.com/nexB/scancode-toolkit/releases/download/v${SCANCODE_VERSION}/scancode-toolkit-v${SCANCODE_VERSION}_py3.11-linux.tar.gz \
+        https://github.com/nexB/scancode-toolkit/releases/download/v${SCANCODE_VERSION}/scancode-toolkit-v${SCANCODE_VERSION}_py3.8-linux.tar.gz \
         --output scancode.tar.gz \
     && mkdir scancode \
     && tar -xf scancode.tar.gz -C scancode --strip-components=1 \
