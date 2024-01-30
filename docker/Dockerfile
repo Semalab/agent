@@ -18,18 +18,18 @@ RUN apt-get update \
 WORKDIR /dependencies
 
 # dependency_check: https://github.com/jeremylong/DependencyCheck
-ARG DEPENDENCY_CHECK_VERSION=9.0.7
-RUN curl -Ls \
-        https://github.com/jeremylong/DependencyCheck/releases/download/v${DEPENDENCY_CHECK_VERSION}/dependency-check-${DEPENDENCY_CHECK_VERSION}-release.zip \
-        --output dependency-check.zip \
-    && unzip dependency-check.zip \
-    && echo -e '#!/bin/bash\n\
-      cd /dependencies/dependency-check/bin/\n\
-      ./dependency-check.sh "$@"\n\
-    ' > /usr/local/bin/dependency-check \
-    && chmod +x /usr/local/bin/dependency-check \
-    && rm dependency-check.zip \
-    && dependency-check --updateonly
+# ARG DEPENDENCY_CHECK_VERSION=9.0.7
+# RUN curl -Ls \
+#         https://github.com/jeremylong/DependencyCheck/releases/download/v${DEPENDENCY_CHECK_VERSION}/dependency-check-${DEPENDENCY_CHECK_VERSION}-release.zip \
+#         --output dependency-check.zip \
+#     && unzip dependency-check.zip \
+#     && echo -e '#!/bin/bash\n\
+#       cd /dependencies/dependency-check/bin/\n\
+#       ./dependency-check.sh "$@"\n\
+#     ' > /usr/local/bin/dependency-check \
+#     && chmod +x /usr/local/bin/dependency-check \
+#     && rm dependency-check.zip \
+#     && dependency-check --updateonly
 
 # scancode: https://github.com/nexB/scancode-toolkit
 ARG SCANCODE_VERSION=31.2.6
