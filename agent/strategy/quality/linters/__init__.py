@@ -18,4 +18,4 @@ class Linters:
 
         # TODO: parallelize
         for linter in self.LINTERS:
-            linter.run(repository=directories.repository, linters_dir=linters_dir)
+            linter.run(directories, linters_dir=linters_dir)

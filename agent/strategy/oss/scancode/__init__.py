@@ -1,8 +1,4 @@
-import os
-import platform
-import subprocess
-
-from agent.utils import flatten
+from agent.utils import flatten, run_logged
 
 
 class Scancode:
@@ -57,7 +53,7 @@ class Scancode:
 
         ignore = flatten([["--ignore", pattern] for pattern in Scancode.IGNORE])
 
-        subprocess.run(
+        run_logged(
             [
                 "scancode",
                 "--csv",
@@ -65,5 +61,6 @@ class Scancode:
                 *Scancode.ARGS,
                 *ignore,
                 directories.repository,
-            ]
+            ],
+            log_dir=directories.log_dir
         )

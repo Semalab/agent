@@ -1,9 +1,8 @@
-import os
+import logging
 import shutil
 import tempfile
 from datetime import datetime
 from pathlib import Path
-from zipfile import ZipFile
 
 import click
 from click import ClickException
@@ -55,8 +54,22 @@ def main(repository: Path, output: Path):
         ]
 
         directories = Directories(repository=repository.path, output=archive_root)
+
+        logging.basicConfig(
+            level=logging.INFO,
+            handlers=[
+                logging.FileHandler(directories.log_dir / "agent.log"),
+                logging.StreamHandler()
+            ]
+        )
+        logger = logging.getLogger("agent")
+
         for strategy in strategies:
-            strategy.run(directories)
+            try:
+                logger.info(f"Running scan: {strategy.__class__.__name__}")
+                strategy.run(directories)
+            except:
+                logger.exception(f"Scan failed: {strategy.__class__.__name__}")
 
         archive_name = make_archive(
             output=output, repo_name=repository.name, root=archive_root
