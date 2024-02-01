@@ -12,6 +12,7 @@ RUN apt-get update \
         cmake \
         openjdk-17-jre-headless \
         cppcheck \
+        maven \
     && rm -rf /var/lib/apt/lists/*
 
 # ---------- oss dependencies ----------
@@ -58,6 +59,17 @@ WORKDIR /src
 RUN pip install poetry==1.7.1
 COPY main.py readme.md pyproject.toml poetry.lock ./
 COPY agent/ agent/
+
+## --------- Install JARs ------------ ##
+WORKDIR /jar/src
+
+RUN git clone git@github.com:Semalab/backend-core.git
+RUN git clone git@github.com:Semalab/backend-activitypersistence.git
+RUN git clone -b sq-4830 git@github.com:Semalab/backend-commitanalysis.git
+
+RUN cd backend-core && mvn clean install
+RUN cd backend-activitypersistence && mvn clean install
+RUN cd backend-commitanalysis && mvn clean install
 
 # install agent and python dependencies
 RUN poetry install

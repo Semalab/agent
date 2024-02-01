@@ -9,6 +9,7 @@ from click import ClickException
 
 from agent.directories import Directories
 from agent.repository import Repository
+from agent.strategy.commit_analysis.full_analysis import FullAnalysis
 from agent.strategy.oss import Dependencies, DependencyCheck, Scancode
 from agent.strategy.quality import Linguist, Linters
 
@@ -28,18 +29,18 @@ from agent.strategy.quality import Linguist, Linters
     metavar="DIRECTORY",
     help="Repository to scan.",
 )
-def main(repository: Path, output: Path):
+def main(repository_path: Path, output: Path):
     """
     Run local scan on REPOSITORY and generate a zip file.
     """
 
-    if not repository.is_dir():
-        raise ClickException(f"repository '{repository}' does not exist")
+    if not repository_path.is_dir():
+        raise ClickException(f"repository '{repository_path}' does not exist")
 
     if not output.is_dir():
         raise ClickException(f"output directory '{output}' does not exist")
 
-    repository = Repository(repository)
+    repository = Repository(repository_path)
     output = output.absolute()
 
     with tempfile.TemporaryDirectory() as archive_root:
@@ -51,6 +52,7 @@ def main(repository: Path, output: Path):
             Scancode(),
             Linters(),
             Linguist(),
+            FullAnalysis(repo_path=repository_path, out_path=output)
         ]
 
         directories = Directories(repository=repository.path, output=archive_root)
