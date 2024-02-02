@@ -1,16 +1,17 @@
-import subprocess
+from agent.utils import run_logged
 
 
 class CppCheck:
-    def run(self, *, repository, linters_dir):
+    def run(self, directories, linters_dir):
         with open(linters_dir / "cppcheck.txt", "w") as output_file:
-            subprocess.run(
+            run_logged(
                 [
                     "cppcheck",
                     "--enable=all",
                     "--force",
                     '--template="{file}:{line}:{column}: {severity}: {message}"',
-                    repository,
+                    directories.repository,
                 ],
+                log_dir=directories.log_dir,
                 stdout=output_file,
             )
