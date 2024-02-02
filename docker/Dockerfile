@@ -17,6 +17,8 @@ RUN apt-get update \
 # ---------- oss dependencies ----------
 WORKDIR /dependencies
 
+COPY cache/ cache/
+
 # dependency_check: https://github.com/jeremylong/DependencyCheck
 ARG DEPENDENCY_CHECK_VERSION=9.0.7
 RUN curl -Ls \
@@ -29,6 +31,7 @@ RUN curl -Ls \
     ' > /usr/local/bin/dependency-check \
     && chmod +x /usr/local/bin/dependency-check \
     && rm dependency-check.zip \
+    && (if [ -d cache/dependency-check ]; then cp -r cache/dependency-check/ dependency-check/data/; fi) \
     && dependency-check --updateonly
 
 # scancode: https://github.com/nexB/scancode-toolkit

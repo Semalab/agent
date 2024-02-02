@@ -24,6 +24,16 @@ jobs:
         uses: docker/setup-qemu-action@v3
         with:
           platforms: arm64
+
+      - name: Set up cache
+        run: mkdir -p cache
+
+      - name: Cache downloaded data
+        id: cache-download
+        uses: actions/cache@v4
+        with:
+          path: cache
+          key: cache-download
       
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -46,6 +56,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push
+        id: build
         uses: docker/build-push-action@v4
         with:
           context: .
@@ -55,3 +66,9 @@ jobs:
           platforms: linux/amd64 # Add linux/arm64 when scancode becomes compatible with it
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Copy downloaded data to cache
+        run: |
+          id=$(docker create ${{ steps.build.outputs.imageid }})
+          docker cp $id:dependencies/dependency-check/data/. ./cache/dependency-check
+          docker rm $id
