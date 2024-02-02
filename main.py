@@ -1,5 +1,5 @@
-import logging
 import shutil
+import logging
 import tempfile
 from datetime import datetime
 from pathlib import Path
@@ -10,8 +10,6 @@ from click import ClickException
 from agent.directories import Directories
 from agent.repository import Repository
 from agent.strategy.commit_analysis.full_analysis import FullAnalysis
-from agent.strategy.oss import Dependencies, DependencyCheck, Scancode
-from agent.strategy.quality import Linguist, Linters
 
 
 @click.command()
@@ -29,33 +27,36 @@ from agent.strategy.quality import Linguist, Linters
     metavar="DIRECTORY",
     help="Repository to scan.",
 )
-def main(repository_path: Path, output: Path):
+def main(repository: Path, output: Path):
     """
     Run local scan on REPOSITORY and generate a zip file.
     """
 
-    if not repository_path.is_dir():
-        raise ClickException(f"repository '{repository_path}' does not exist")
+    # repository_path = Path('local/inp/check-engine')
+    # output = Path('local/out/check-engine')
+
+    if not repository.is_dir():
+        raise ClickException(f"repository '{repository}' does not exist")
 
     if not output.is_dir():
         raise ClickException(f"output directory '{output}' does not exist")
 
-    repository = Repository(repository_path)
+    repository_r = Repository(repository)
     output = output.absolute()
 
     with tempfile.TemporaryDirectory() as archive_root:
         archive_root = Path(archive_root)
 
         strategies = [
-            Dependencies(),
-            DependencyCheck(),
-            Scancode(),
-            Linters(),
-            Linguist(),
-            FullAnalysis(repo_path=repository_path, out_path=output)
+            # Dependencies(),
+            # DependencyCheck(),
+            # Scancode(),
+            # Linters(),
+            # Linguist(),
+            FullAnalysis(repo_path=repository, out_path=output)
         ]
 
-        directories = Directories(repository=repository.path, output=archive_root)
+        directories = Directories(repository=repository_r.path, output=archive_root)
 
         logging.basicConfig(
             level=logging.INFO,
@@ -73,14 +74,14 @@ def main(repository_path: Path, output: Path):
             except:
                 logger.exception(f"Scan failed: {strategy.__class__.__name__}")
 
-        archive_name = make_archive(
-            output=output, repo_name=repository.name, root=archive_root
-        )
-
-        click.echo(
-            f"A zip file has been created at '{archive_name}.zip'. Please send this file to "
-            "customers@semasoftware.com to complete the analysis."
-        )
+        # archive_name = make_archive(
+        #     output=output, repo_name=repository_r.name, root=archive_root
+        # )
+        #
+        # click.echo(
+        #     f"A zip file has been created at '{archive_name}.zip'. Please send this file to "
+        #     "customers@semasoftware.com to complete the analysis."
+        # )
 
 
 def make_archive(output: Path, repo_name: str, root: Path) -> Path:
