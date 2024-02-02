@@ -7,8 +7,9 @@ def flatten(lst):
 def run_logged(args, *runargs, log_dir, **kwargs):
     with open(log_dir / (args[0] + ".log"), "a") as log_file:
         log_file.write(f"--- Running {str(args)}\n")
+        log_file.flush()
 
-        if "capture_output" in kwargs or "stdout" in kwargs:
+        if "stdout" in kwargs:
             kwargs["stderr"] = log_file
         else:
             kwargs["stderr"] = subprocess.STDOUT

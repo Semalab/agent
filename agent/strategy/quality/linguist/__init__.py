@@ -35,14 +35,14 @@ class Linguist:
             ["git", "config", "--global", "core.quotePath", "false"],
             log_dir=directories.log_dir,
             cwd=directories.repository,
-            check=True,
+            check=True
         )
 
         run_logged(
             ["git", "config", "--global", "--add", "safe.directory", "*"],
             log_dir=directories.log_dir,
             cwd=directories.repository,
-            check=True,
+            check=True
         )
 
     def list_files(self, directories, linguist_dir):
@@ -55,7 +55,7 @@ class Linguist:
                 log_dir=directories.log_dir,
                 cwd=directories.repository,
                 stdout=git_ls_tree_file,
-                check=True,
+                check=True
             )
 
     def linguist(self, directories, linguist_dir):
@@ -68,29 +68,27 @@ class Linguist:
                 log_dir=directories.log_dir,
                 cwd=directories.repository,
                 stdout=github_linguist_file,
-                check=True,
+                check=True
             )
 
     def wc(self, directories, linguist_dir):
         with open(linguist_dir / "wc", "w") as wc_file:
             for path in self.files(directories, linguist_dir):
-                output = run_logged(
+                run_logged(
                     ["wc", path],
                     log_dir=directories.log_dir,
                     cwd=directories.repository,
-                    capture_output=True,
-                    check=True,
+                    stdout=wc_file,
+                    check=True
                 )
-                wc_file.write(output.stdout.decode("utf-8"))
 
     def mime(self, directories, linguist_dir):
         with open(linguist_dir / "mime", "w") as mime_file:
             for path in self.files(directories, linguist_dir):
-                output = run_logged(
+                run_logged(
                     ["file", "-i", path],
                     log_dir=directories.log_dir,
                     cwd=directories.repository,
-                    capture_output=True,
-                    check=True,
+                    stdout=mime_file,
+                    check=True
                 )
-                mime_file.write(output.stdout.decode("utf-8"))
