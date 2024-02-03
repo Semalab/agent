@@ -17,24 +17,24 @@ RUN apt-get update \
 # ---------- oss dependencies ----------
 WORKDIR /dependencies
 
-# dependency_check: https://github.com/jeremylong/DependencyCheck
-# ARG DEPENDENCY_CHECK_VERSION=9.0.7
-# RUN curl -Ls \
-#         https://github.com/jeremylong/DependencyCheck/releases/download/v${DEPENDENCY_CHECK_VERSION}/dependency-check-${DEPENDENCY_CHECK_VERSION}-release.zip \
-#         --output dependency-check.zip \
-#     && unzip dependency-check.zip \
-#     && echo -e '#!/bin/bash\n\
-#       cd /dependencies/dependency-check/bin/\n\
-#       ./dependency-check.sh "$@"\n\
-#     ' > /usr/local/bin/dependency-check \
-#     && chmod +x /usr/local/bin/dependency-check \
-#     && rm dependency-check.zip \
-#     && dependency-check --updateonly
+dependency_check: https://github.com/jeremylong/DependencyCheck
+ARG DEPENDENCY_CHECK_VERSION=9.0.7
+RUN curl -Ls \
+        https://github.com/jeremylong/DependencyCheck/releases/download/v${DEPENDENCY_CHECK_VERSION}/dependency-check-${DEPENDENCY_CHECK_VERSION}-release.zip \
+        --output dependency-check.zip \
+    && unzip dependency-check.zip \
+    && echo -e '#!/bin/bash\n\
+      cd /dependencies/dependency-check/bin/\n\
+      ./dependency-check.sh "$@"\n\
+    ' > /usr/local/bin/dependency-check \
+    && chmod +x /usr/local/bin/dependency-check \
+    && rm dependency-check.zip \
+    && dependency-check --updateonly
 
 # scancode: https://github.com/nexB/scancode-toolkit
-ARG SCANCODE_VERSION=31.2.6
+ARG SCANCODE_VERSION=32.0.8
 RUN curl -Ls \
-        https://github.com/nexB/scancode-toolkit/releases/download/v${SCANCODE_VERSION}/scancode-toolkit-v${SCANCODE_VERSION}_py3.8-linux.tar.gz \
+        https://github.com/nexB/scancode-toolkit/releases/download/v${SCANCODE_VERSION}/scancode-toolkit-v${SCANCODE_VERSION}_py3.11-linux.tar.gz \
         --output scancode.tar.gz \
     && mkdir scancode \
     && tar -xf scancode.tar.gz -C scancode --strip-components=1 \
