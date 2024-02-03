@@ -17,7 +17,7 @@ RUN apt-get update \
 # ---------- oss dependencies ----------
 WORKDIR /dependencies
 
-dependency_check: https://github.com/jeremylong/DependencyCheck
+# dependency_check: https://github.com/jeremylong/DependencyCheck
 ARG DEPENDENCY_CHECK_VERSION=9.0.7
 RUN curl -Ls \
         https://github.com/jeremylong/DependencyCheck/releases/download/v${DEPENDENCY_CHECK_VERSION}/dependency-check-${DEPENDENCY_CHECK_VERSION}-release.zip \
