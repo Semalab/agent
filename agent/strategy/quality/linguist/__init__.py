@@ -1,9 +1,6 @@
-import os
-import platform
-import subprocess
 from pathlib import Path
 
-from agent.utils import flatten
+from agent.utils import run_logged
 
 
 class Linguist:
@@ -34,16 +31,18 @@ class Linguist:
         run any git configuration necessary before linguist scan
         """
 
-        subprocess.run(
+        run_logged(
             ["git", "config", "--global", "core.quotePath", "false"],
+            log_dir=directories.log_dir,
             cwd=directories.repository,
-            check=True,
+            check=True
         )
 
-        subprocess.run(
+        run_logged(
             ["git", "config", "--global", "--add", "safe.directory", "*"],
+            log_dir=directories.log_dir,
             cwd=directories.repository,
-            check=True,
+            check=True
         )
 
     def list_files(self, directories, linguist_dir):
@@ -51,11 +50,12 @@ class Linguist:
         lists all committed files
         """
         with open(linguist_dir / "git-ls-tree", "w") as git_ls_tree_file:
-            subprocess.run(
+            run_logged(
                 ["git", "ls-tree", "--full-tree", "-r", "--name-only", "HEAD"],
+                log_dir=directories.log_dir,
                 cwd=directories.repository,
                 stdout=git_ls_tree_file,
-                check=True,
+                check=True
             )
 
     def linguist(self, directories, linguist_dir):
@@ -63,31 +63,32 @@ class Linguist:
         run github-linguist on repo
         """
         with open(linguist_dir / "github-linguist", "w") as github_linguist_file:
-            subprocess.run(
+            run_logged(
                 ["github-linguist", "--breakdown"],
+                log_dir=directories.log_dir,
                 cwd=directories.repository,
                 stdout=github_linguist_file,
-                check=True,
+                check=True
             )
 
     def wc(self, directories, linguist_dir):
         with open(linguist_dir / "wc", "w") as wc_file:
             for path in self.files(directories, linguist_dir):
-                output = subprocess.run(
+                run_logged(
                     ["wc", path],
+                    log_dir=directories.log_dir,
                     cwd=directories.repository,
-                    capture_output=True,
-                    check=True,
+                    stdout=wc_file,
+                    check=True
                 )
-                wc_file.write(output.stdout.decode("utf-8"))
 
     def mime(self, directories, linguist_dir):
         with open(linguist_dir / "mime", "w") as mime_file:
             for path in self.files(directories, linguist_dir):
-                output = subprocess.run(
+                run_logged(
                     ["file", "-i", path],
+                    log_dir=directories.log_dir,
                     cwd=directories.repository,
-                    capture_output=True,
-                    check=True,
+                    stdout=mime_file,
+                    check=True
                 )
-                mime_file.write(output.stdout.decode("utf-8"))

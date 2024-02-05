@@ -1,5 +1,4 @@
-import os
-import subprocess
+from agent.utils import run_logged
 
 
 class DependencyCheck:
@@ -8,7 +7,7 @@ class DependencyCheck:
     """
 
     def run(self, directories):
-        subprocess.run(
+        run_logged(
             [
                 "dependency-check",
                 "--format",
@@ -17,5 +16,6 @@ class DependencyCheck:
                 directories.repository,
                 "--out",
                 directories.sema_output / "dependency_check",
-            ]
+            ],
+            log_dir=directories.log_dir
         )
