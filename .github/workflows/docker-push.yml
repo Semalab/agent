@@ -75,7 +75,6 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
 
       - name: Copy downloaded data to cache
-        run: |
-          id=$(docker create ${{ steps.build.outputs.imageid }})
-          docker cp $id:dependencies/dependency-check/data/. ./cache/dependency-check
-          docker rm $id
+        env:
+          AGENT_TAG: ${{ steps.build.outputs.imageid }}
+        run: make save-cache

@@ -1,21 +1,26 @@
-.PHONY: all clean dist linux windows
+AGENT_TAG ?= sema-agent
 
-all: linux windows
+.PHONY: all build run-docker run shell save-cache
 
-clean:
-	docker build -t agent-linux-runner -f ./docker/linux/Dockerfile.run ./
-	docker run --mount type=bind,source=$$PWD,target=/repo agent-linux-runner rm -rf /repo/dist
+all: run
 
-dist:
-	mkdir -p dist
+build:
+	mkdir -p cache
+	docker build --platform linux/amd64 --tag $(AGENT_TAG) --file ./docker/Dockerfile ./
 
-linux: dist
-	docker build -t agent-linux-builder -f ./docker/linux/Dockerfile.build ./
-	docker run --mount type=bind,source=$$PWD/dist,target=/dist agent-linux-builder \
-		poetry run pyinstaller --onefile --clean --noconfirm --dist /dist/linux --workpath /tmp /src/main.py
+run-docker: build save-cache
+	docker run \
+		--mount type=bind,source="$(abspath $(AGENT_REPO))",target=/repo,readonly \
+		--mount type=bind,source="$(abspath $(AGENT_OUT))",target=/out \
+		--rm $(AGENT_RUN_ARGS) $(AGENT_TAG) $(AGENT_CLI_ARGS)
 
-windows: dist
-	docker build -t agent-windows-base -f ./docker/windows/Dockerfile.base ./
-	docker build -t agent-windows-builder -f ./docker/windows/Dockerfile.build ./
-	docker run --mount type=bind,source=$$PWD/dist,target=/dist agent-windows-builder \
-		/scripts/wine-do.sh poetry run pyinstaller --onefile --clean --noconfirm --dist /dist/windows --workpath /tmp /src/main.py
+shell: AGENT_RUN_ARGS += -it --entrypoint /bin/bash
+shell: run-docker
+
+run: AGENT_CLI_ARGS += --repository /repo --output /out
+run: run-docker
+
+save-cache:
+	$(eval CONTAINER_ID=$(shell docker container create $(AGENT_TAG)))
+	docker container cp $(CONTAINER_ID):dependencies/dependency-check/data/. ./cache/dependency-check
+	docker container rm $(CONTAINER_ID)

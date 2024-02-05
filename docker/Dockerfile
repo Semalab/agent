@@ -17,23 +17,6 @@ RUN apt-get update \
 # ---------- oss dependencies ----------
 WORKDIR /dependencies
 
-COPY cache/ cache/
-
-# dependency_check: https://github.com/jeremylong/DependencyCheck
-ARG DEPENDENCY_CHECK_VERSION=9.0.7
-RUN curl -Ls \
-        https://github.com/jeremylong/DependencyCheck/releases/download/v${DEPENDENCY_CHECK_VERSION}/dependency-check-${DEPENDENCY_CHECK_VERSION}-release.zip \
-        --output dependency-check.zip \
-    && unzip dependency-check.zip \
-    && echo -e '#!/bin/bash\n\
-      cd /dependencies/dependency-check/bin/\n\
-      ./dependency-check.sh "$@"\n\
-    ' > /usr/local/bin/dependency-check \
-    && chmod +x /usr/local/bin/dependency-check \
-    && rm dependency-check.zip \
-    && (if [ -d cache/dependency-check ]; then cp -r cache/dependency-check/ dependency-check/data/; fi) \
-    && dependency-check --updateonly
-
 # scancode: https://github.com/nexB/scancode-toolkit
 ARG SCANCODE_VERSION=32.0.8
 RUN curl -Ls \
@@ -52,6 +35,23 @@ RUN gem install github-linguist:${LINGUIST_VERSION}
 
 # ---------- linters ----------
 RUN pip install flawfinder
+
+COPY cache/ cache/
+
+# dependency_check: https://github.com/jeremylong/DependencyCheck
+ARG DEPENDENCY_CHECK_VERSION=9.0.7
+RUN curl -Ls \
+        https://github.com/jeremylong/DependencyCheck/releases/download/v${DEPENDENCY_CHECK_VERSION}/dependency-check-${DEPENDENCY_CHECK_VERSION}-release.zip \
+        --output dependency-check.zip \
+    && unzip dependency-check.zip \
+    && echo -e '#!/bin/bash\n\
+      cd /dependencies/dependency-check/bin/\n\
+      ./dependency-check.sh "$@"\n\
+    ' > /usr/local/bin/dependency-check \
+    && chmod +x /usr/local/bin/dependency-check \
+    && rm dependency-check.zip \
+    && (if [ -d cache/dependency-check ]; then cp -r cache/dependency-check/ dependency-check/data/; fi) \
+    && dependency-check --updateonly
 
 WORKDIR /src
 
