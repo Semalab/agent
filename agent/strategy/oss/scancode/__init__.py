@@ -56,7 +56,7 @@ class Scancode:
         run_logged(
             [
                 "scancode",
-                "-json-pp",
+                "--json-pp",
                 scancode_dir / "scancode-output.json",
                 *Scancode.ARGS,
                 *ignore,
