@@ -15,7 +15,8 @@ class FullAnalysis:
 
     def run(self, directories: Directories):
         try:
-            os.system(f"java -jar {self.basepath}/{self.jar_name}")
+            cmd = f"java -jar {self.basepath}/{self.jar_name} -inputPath {self.repo} -outPath {self.out} -branch master"
+            os.system(cmd)
         except Exception as e:
             print(f"Failed to run commit analysis because: {e}")
 
