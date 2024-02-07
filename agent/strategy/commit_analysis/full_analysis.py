@@ -1,8 +1,6 @@
 import os
 from pathlib import Path
 
-from agent.directories import Directories
-
 
 class FullAnalysis:
     userdir = '/home/siddharthshishulkar'
@@ -13,9 +11,11 @@ class FullAnalysis:
         self.repo = repo_path
         self.out = out_path
 
-    def run(self, directories: Directories):
+    def run(self, _):
+        out_path = Path(f"{self.out}/commit_analysis")
         try:
-            cmd = f"java -jar {self.basepath}/{self.jar_name} -inputPath {self.repo} -outPath {self.out} -branch master"
+            Path.mkdir(out_path) if not Path.exists(out_path) else None
+            cmd = f"java -jar {self.basepath}/{self.jar_name} -inputPath {self.repo} -outPath {out_path} -branch master"
             os.system(cmd)
         except Exception as e:
             print(f"Failed to run commit analysis because: {e}")
