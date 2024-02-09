@@ -53,6 +53,7 @@ if ($dockerOS -ne 'linux') {
 docker pull "ghcr.io/semalab/agent:$Tag"
 
 docker run `
+  --rm `
   --mount "type=bind,source=$(Resolve-Path $RepoDir),target=/repo,readonly" `
   --mount "type=bind,source=$(Resolve-Path $OutDir),target=/out" `
   "ghcr.io/semalab/agent:$Tag" --repository /repo --output /out
