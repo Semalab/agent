@@ -12,10 +12,10 @@ class FullAnalysis:
         self.out = out_path
 
     def run(self, _):
-        out_path = Path(f"{self.out}/commit_analysis")
+        out_path = Path(f"{self.out}/.sema/commit_analysis")
         try:
-            Path.mkdir(out_path) if not Path.exists(out_path) else None
-            cmd = f"java -jar {self.basepath}/{self.jar_name} -inputPath {self.repo} -outPath {out_path} -branch master"
+            Path.mkdir(out_path, parents=True) if not Path.exists(out_path) else None
+            cmd = f"java -jar {self.basepath}/{self.jar_name} -agent -inputPath {self.repo} -outPath {out_path} -branch master"
             os.system(cmd)
         except Exception as e:
             print(f"Failed to run commit analysis because: {e}")
