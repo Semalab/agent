@@ -78,6 +78,7 @@ main() {
   docker pull ghcr.io/semalab/agent:$TAG
 
   docker run \
+    --rm \
     --mount type=bind,source="$(abspath $REPO)",target=/repo,readonly \
     --mount type=bind,source="$(abspath $OUT)",target=/out \
     ghcr.io/semalab/agent:$TAG --repository /repo --output /out
