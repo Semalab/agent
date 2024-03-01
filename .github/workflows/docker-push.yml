@@ -43,6 +43,19 @@ jobs:
           token: ${{ secrets.GH_PAT }}
           path: backend-commitanalysis
 
+      - name: Checkout corresponding branches
+        run: |
+          for repo in backend-core backend-activitypersistence backend-commitanalysis; do
+            pushd $repo
+            if git ls-remote --exit-code --heads origin ${{ github.ref_name }}; then
+              git fetch origin ${{ github.ref_name }}
+              git switch --discard-changes ${{ github.ref_name }}
+            else
+              echo "Staying on default branch as ${{ github.ref_name }} does not exist in $repo"
+            fi
+            popd
+          done
+
       - name: Build JARs
         working-directory: agent
         run: make build-jars
