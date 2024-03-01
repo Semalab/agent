@@ -40,7 +40,7 @@ class Repository:
                 return cls.svn_to_git(repository)
             case None:
                 raise RuntimeError(
-                    "unknown repository version control system for repository {repository}"
+                    f"unknown repository version control system for repository {repository}"
                 )
 
             case other_vcs:

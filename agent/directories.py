@@ -10,19 +10,22 @@ class Directories:
     repository: Path
     output: Path
 
+    def mkdir(self, suffix: str) -> Path:
+        path = self.sema_output / suffix
+        path.mkdir(exist_ok=True)
+
+        return path
+
     @property
     def sema_output(self) -> Path:
         sema_output = self.output / self.SEMA_DIR
         sema_output.mkdir(exist_ok=True)
 
         return sema_output
-    
+
     @property
     def log_dir(self) -> Path:
-        log_dir = self.sema_output / "logs"
-        log_dir.mkdir(exist_ok=True)
-
-        return log_dir
+        return self.mkdir("logs")
 
     def __post_init__(self):
         if not os.path.isabs(self.repository):

@@ -4,21 +4,48 @@ on:
   push:
     branches:
       - main
-      - SQ-*
+      - "[Ss][Qq]-*"
     tags:
       - v*
 
 jobs:
   push:
     runs-on: ubuntu-latest
-    
+
     permissions:
       packages: write
       contents: read
-    
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          path: agent
+
+      - name: Checkout backend-core
+        uses: actions/checkout@v4
+        with:
+          repository: Semalab/backend-core
+          token: ${{ secrets.GH_PAT }}
+          path: backend-core
+
+      - name: Checkout backend-activitypersistence
+        uses: actions/checkout@v4
+        with:
+          repository: Semalab/backend-activitypersistence
+          token: ${{ secrets.GH_PAT }}
+          path: backend-activitypersistence
+
+      - name: Checkout backend-commitanalysis
+        uses: actions/checkout@v4
+        with:
+          repository: Semalab/backend-commitanalysis
+          token: ${{ secrets.GH_PAT }}
+          path: backend-commitanalysis
+
+      - name: Build JARs
+        working-directory: agent
+        run: make build-jars
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -26,18 +53,19 @@ jobs:
           platforms: arm64
 
       - name: Set up cache
+        working-directory: agent
         run: mkdir -p cache
 
       - name: Cache downloaded data
         id: cache-download
         uses: actions/cache@v4
         with:
-          path: cache
+          path: agent/cache
           key: cache-download
-      
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-      
+
       - name: Docker meta
         id: meta
         uses: docker/metadata-action@v5
@@ -47,7 +75,7 @@ jobs:
             type=raw,value=latest,enable={{is_default_branch}}
             type=ref,event=branch
             type=semver,pattern={{version}}
-      
+
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         with:
@@ -59,15 +87,15 @@ jobs:
         id: build
         uses: docker/build-push-action@v5
         with:
-          context: .
-          file: ./docker/Dockerfile
+          context: agent
+          file: agent/docker/Dockerfile
           load: true
 
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
-          context: .
-          file: ./docker/Dockerfile
+          context: agent
+          file: agent/docker/Dockerfile
           push: true
           provenance: false # Disabled because GitHub UI shows unknown/unknown images with it
           platforms: linux/amd64 # Add linux/arm64 when scancode becomes compatible with it
@@ -77,4 +105,5 @@ jobs:
       - name: Copy downloaded data to cache
         env:
           AGENT_TAG: ${{ steps.build.outputs.imageid }}
+        working-directory: agent
         run: make save-cache

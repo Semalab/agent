@@ -1,10 +1,31 @@
 AGENT_TAG ?= sema-agent
 
-.PHONY: all build run-docker run shell save-cache
+BACKEND_CORE_PATH ?= ../backend-core
+BACKEND_ACTIVITYPERSISTENCE_PATH ?= ../backend-activitypersistence
+BACKEND_COMMITANALYSIS_PATH ?= ../backend-commitanalysis
+
+.PHONY: all build-jars build run-docker run shell save-cache clean
 
 all: run
 
-build:
+define build-jar
+out/$(notdir $(1))/$(notdir $(1)).jar: $(1)/pom.xml $(1)/src $(2)
+	docker run \
+		-v maven-repo:/root/.m2 \
+		-v "$(abspath $(1)):/usr/src/mymaven" \
+		-w /usr/src/mymaven \
+		--rm maven mvn clean install
+	mkdir -p out/$(notdir $(1))
+	cp $(1)/target/*.jar out/$(notdir $(1))
+endef
+
+$(eval $(call build-jar,$(BACKEND_CORE_PATH),))
+$(eval $(call build-jar,$(BACKEND_ACTIVITYPERSISTENCE_PATH),out/backend-core/backend-core.jar))
+$(eval $(call build-jar,$(BACKEND_COMMITANALYSIS_PATH),out/backend-activitypersistence/backend-activitypersistence.jar))
+
+build-jars: out/backend-commitanalysis/backend-commitanalysis.jar
+
+build: build-jars
 	mkdir -p cache
 	docker build --platform linux/amd64 --tag $(AGENT_TAG) --file ./docker/Dockerfile ./
 
@@ -24,3 +45,6 @@ save-cache:
 	$(eval CONTAINER_ID=$(shell docker container create $(AGENT_TAG)))
 	docker container cp $(CONTAINER_ID):dependencies/dependency-check/data/. ./cache/dependency-check
 	docker container rm $(CONTAINER_ID)
+
+clean:
+	rm -rf out

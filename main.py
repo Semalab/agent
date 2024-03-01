@@ -1,5 +1,5 @@
-import shutil
 import logging
+import shutil
 import tempfile
 from datetime import datetime
 from pathlib import Path
@@ -9,9 +9,9 @@ from click import ClickException
 
 from agent.directories import Directories
 from agent.repository import Repository
-from agent.strategy.commit_analysis.full_analysis import FullAnalysis
+from agent.strategy.backend_analysis import BackendAnalysis
 from agent.strategy.oss import Dependencies, DependencyCheck, Scancode
-from agent.strategy.quality import Linters, Linguist
+from agent.strategy.quality import Linguist, Linters
 
 
 @click.command()
@@ -40,7 +40,7 @@ def main(repository: Path, output: Path):
     if not output.is_dir():
         raise ClickException(f"output directory '{output}' does not exist")
 
-    repository_r = Repository(repository)
+    repository = Repository(repository)
     output = output.absolute()
 
     with tempfile.TemporaryDirectory() as archive_root:
@@ -52,10 +52,10 @@ def main(repository: Path, output: Path):
             Scancode(),
             Linters(),
             Linguist(),
-            FullAnalysis(repo_path=repository, out_path=output)
+            BackendAnalysis("backend-commitanalysis")
         ]
 
-        directories = Directories(repository=repository_r.path, output=archive_root)
+        directories = Directories(repository=repository.path, output=archive_root)
 
         logging.basicConfig(
             level=logging.INFO,
@@ -74,7 +74,7 @@ def main(repository: Path, output: Path):
                 logger.exception(f"Scan failed: {strategy.__class__.__name__}")
 
         archive_name = make_archive(
-            output=output, repo_name=repository_r.name, root=archive_root
+            output=output, repo_name=repository.name, root=archive_root
         )
 
         click.echo(

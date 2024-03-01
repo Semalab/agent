@@ -9,8 +9,7 @@ class Linguist:
     """
 
     def run(self, directories):
-        linguist_dir = directories.sema_output / "linguist"
-        linguist_dir.mkdir()
+        linguist_dir = directories.mkdir("linguist")
 
         self.git_config(directories)
         self.list_files(directories, linguist_dir)

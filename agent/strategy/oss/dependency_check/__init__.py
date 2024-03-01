@@ -15,7 +15,7 @@ class DependencyCheck:
                 "--scan",
                 directories.repository,
                 "--out",
-                directories.sema_output / "dependency_check",
+                directories.mkdir("dependency_check"),
             ],
             log_dir=directories.log_dir
         )
