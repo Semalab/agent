@@ -53,6 +53,9 @@ RUN curl -Ls \
     && (if [ -d cache/dependency-check ]; then cp -r cache/dependency-check/ dependency-check/data/; fi) \
     && dependency-check --updateonly
 
+# backend services
+COPY out/backend-commitanalysis/ /dependencies/backend-commitanalysis/
+
 WORKDIR /src
 
 RUN pip install poetry==1.7.1

@@ -13,8 +13,7 @@ class Linters:
     ]
 
     def run(self, directories):
-        linters_dir = directories.sema_output / "linters"
-        linters_dir.mkdir()
+        linters_dir = directories.mkdir("linters")
 
         # TODO: parallelize
         for linter in self.LINTERS:

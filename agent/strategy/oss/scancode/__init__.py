@@ -48,9 +48,7 @@ class Scancode:
     ]
 
     def run(self, directories):
-        scancode_dir = directories.sema_output / "scancode"
-        scancode_dir.mkdir()
-
+        scancode_dir = directories.mkdir("scancode")
         ignore = flatten([["--ignore", pattern] for pattern in Scancode.IGNORE])
 
         run_logged(
