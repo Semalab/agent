@@ -53,6 +53,7 @@ def main(repository: Path, output: Path):
             Linters(),
             Linguist(),
             BackendAnalysis("backend-commitanalysis")
+            BackendAnalysis("backend-gitblame")
         ]
 
         directories = Directories(repository=repository.path, output=archive_root)

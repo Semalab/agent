@@ -3,6 +3,7 @@ AGENT_TAG ?= sema-agent
 BACKEND_CORE_PATH ?= ../backend-core
 BACKEND_ACTIVITYPERSISTENCE_PATH ?= ../backend-activitypersistence
 BACKEND_COMMITANALYSIS_PATH ?= ../backend-commitanalysis
+BACKEND_GITBLAME_PATH ?= ../backend-gitblame
 
 .PHONY: all build-jars build run-docker run shell save-cache clean
 
@@ -22,8 +23,10 @@ endef
 $(eval $(call build-jar,$(BACKEND_CORE_PATH),))
 $(eval $(call build-jar,$(BACKEND_ACTIVITYPERSISTENCE_PATH),out/backend-core/backend-core.jar))
 $(eval $(call build-jar,$(BACKEND_COMMITANALYSIS_PATH),out/backend-activitypersistence/backend-activitypersistence.jar))
+$(eval $(call build-jar,$(BACKEND_GITBLAME_PATH),out/backend-gitblame/backend-gitblame.jar))
 
-build-jars: out/backend-commitanalysis/backend-commitanalysis.jar
+
+build-jars: out/backend-commitanalysis/backend-commitanalysis.jar out/backend-gitblame/backend-gitblame.jar
 
 build: build-jars
 	mkdir -p cache

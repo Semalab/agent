@@ -55,6 +55,8 @@ RUN curl -Ls \
 
 # backend services
 COPY out/backend-commitanalysis/ /dependencies/backend-commitanalysis/
+COPY out/backend-gitblame/ /dependencies/backend-gitblame/
+
 
 WORKDIR /src
 
