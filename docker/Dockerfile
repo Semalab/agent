@@ -31,7 +31,12 @@ RUN curl -Ls \
 
 # linguist: https://github.com/github-linguist/linguist
 ARG LINGUIST_VERSION=7.28
-RUN gem install github-linguist:${LINGUIST_VERSION}
+RUN gem install github-linguist:${LINGUIST_VERSION} \
+    # Remove MAX_TREE_SIZE check from linguist - https://github.com/github-linguist/linguist/issues/6550
+    && find /var/lib/gems -path '*/lib/linguist/repository.rb' \
+        -exec sed -ie 's/return {*} if current_tree.count_recursive(MAX_TREE_SIZE) >= MAX_TREE_SIZE/#/g' {} ';' \
+        # print and grep just to make sure that some files were found - otherwise, find happily returns 0
+        -print | grep -q .
 
 # ---------- linters ----------
 RUN pip install flawfinder
