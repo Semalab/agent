@@ -26,7 +26,8 @@ $(eval $(call build-jar,$(BACKEND_COMMITANALYSIS_PATH),out/backend-activitypersi
 $(eval $(call build-jar,$(BACKEND_GITBLAME_PATH),out/backend-gitblame/backend-gitblame.jar))
 
 
-build-jars: out/backend-commitanalysis/backend-commitanalysis.jar out/backend-gitblame/backend-gitblame.jar
+build-jars: out/backend-commitanalysis/backend-commitanalysis.jar 
+build-jars: out/backend-gitblame/backend-gitblame.jar
 
 build: build-jars
 	mkdir -p cache
