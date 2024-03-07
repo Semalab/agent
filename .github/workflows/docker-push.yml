@@ -43,6 +43,13 @@ jobs:
           token: ${{ secrets.GH_PAT }}
           path: backend-commitanalysis
 
+      - name: Checkout backend-gitblame
+        uses: actions/checkout@v4
+        with:
+          repository: Semalab/backend-gitblame
+          token: ${{ secrets.GH_PAT }}
+          path: backend-gitblame
+
       - name: Checkout corresponding branches
         run: |
           for repo in backend-core backend-activitypersistence backend-commitanalysis; do
