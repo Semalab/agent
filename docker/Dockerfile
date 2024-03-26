@@ -54,9 +54,7 @@ RUN curl -Ls \
     && dependency-check --updateonly
 
 # backend services
-COPY out/backend-commitanalysis/ /dependencies/backend-commitanalysis/
-COPY out/backend-gitblame/ /dependencies/backend-gitblame/
-
+COPY out/backend-*/*-jar-with-dependencies.jar /dependencies/
 
 WORKDIR /src
 

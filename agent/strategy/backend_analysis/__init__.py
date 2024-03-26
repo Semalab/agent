@@ -15,7 +15,7 @@ class BackendAnalysis:
         logger = logging.getLogger(__name__)
         logger.info(f"Running backend analysis: {self.service_name}")
 
-        jar_path = f"/dependencies/{self.service_name}/{self.service_name}-jar-with-dependencies.jar"
+        jar_path = f"/dependencies/{self.service_name}-jar-with-dependencies.jar"
         run_logged(
             [
                 "java",
