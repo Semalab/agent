@@ -39,7 +39,7 @@ run-docker: build save-cache
 shell: AGENT_RUN_ARGS += -it --entrypoint /bin/bash
 shell: run-docker
 
-run: AGENT_CLI_ARGS += --repository /repo --output /out
+run: AGENT_CLI_ARGS += --repository /repo --output /out $(AGENT_ARGS)
 run: run-docker
 
 save-cache:
