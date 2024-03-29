@@ -44,6 +44,18 @@ RUN set -eux; \
 # ---------- linters ----------
 RUN python -m pip install --no-cache-dir flawfinder
 
+# PMD: https://pmd.github.io/
+ARG PMD_VERSION=7.0.0
+RUN set -eux; \
+    curl -fsSL \
+        https://github.com/pmd/pmd/releases/download/pmd_releases%2F${PMD_VERSION}/pmd-dist-${PMD_VERSION}-bin.zip \
+        --output pmd.zip \
+    ; \
+    unzip pmd.zip; \
+    mv pmd-* pmd ; \
+    ln -s /dependencies/pmd/bin/pmd /usr/local/bin/pmd; \
+    rm pmd.zip
+
 COPY cache/ cache/
 
 # dependency_check: https://github.com/jeremylong/DependencyCheck
