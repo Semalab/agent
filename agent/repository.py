@@ -1,3 +1,4 @@
+import logging
 import subprocess
 import tempfile
 from enum import Enum
@@ -33,20 +34,19 @@ class Repository:
 
     @classmethod
     def convert(cls, repository: Path) -> Path:
+        logger = logging.getLogger(__name__)
+
         match VCS.detect(repository):
             case VCS.GIT:
                 return repository
             case VCS.SVN:
                 return cls.svn_to_git(repository)
             case None:
-                raise RuntimeError(
-                    f"unknown repository version control system for repository {repository}"
-                )
-
-            case other_vcs:
-                raise RuntimeError(
-                    f"unsupported version control system {other_vcs} for repository {repository}"
-                )
+                logger.warning("Unknown repository version control system")
+                return repository
+            case VCS.MERCURIAL:
+                logger.warning("Unsupported version control system")
+                return repository
 
     @classmethod
     def svn_to_git(cls, repository_svn: Path) -> Path:
