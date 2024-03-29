@@ -29,7 +29,8 @@ from agent.strategy.quality import Linguist, Linters
     metavar="DIRECTORY",
     help="Repository to scan.",
 )
-def main(repository: Path, output: Path):
+@click.argument('scantypes', nargs=-1)
+def main(repository: Path, output: Path, scantypes: tuple[str, ...]):
     """
     Run local scan on REPOSITORY and generate a zip file.
     """
@@ -68,11 +69,16 @@ def main(repository: Path, output: Path):
         logger = logging.getLogger("agent")
 
         for strategy in strategies:
+            strategy_name = strategy.__class__.__name__
+
+            if scantypes and strategy_name.lower() not in scantypes:
+                continue
+
             try:
-                logger.info(f"Running scan: {strategy.__class__.__name__}")
+                logger.info(f"Running scan: {strategy_name}")
                 strategy.run(directories)
             except:
-                logger.exception(f"Scan failed: {strategy.__class__.__name__}")
+                logger.exception(f"Scan failed: {strategy_name}")
 
         archive_name = make_archive(
             output=output, repo_name=repository.name, root=archive_root
