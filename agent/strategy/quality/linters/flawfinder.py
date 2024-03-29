@@ -25,7 +25,7 @@ class FlawFinder:
                         "filename": row["File"],
                         "line_num": row["Line"],
                         "col_num": row["Column"],
-                        "err_message": f'{row["Category"]},{row["Name"]}: {row["Warning"]}'
+                        "err_message": f'{row["Category"]}/{row["Name"]}: {row["Warning"]}'
                     } for row in reader],
                     json_file
                 )
