@@ -3,8 +3,6 @@ FROM python:3.11-bookworm
 RUN set -eux; \
     apt-get update; \
     apt-get install -y --no-install-recommends \
-        curl \
-        unzip \
         subversion \
         git-svn \
         ruby-dev \
@@ -42,7 +40,7 @@ RUN set -eux; \
         -print | grep -q .
 
 # ---------- linters ----------
-RUN python -m pip install --no-cache-dir flawfinder
+RUN python -m pip install --no-cache-dir flawfinder pylint
 
 # PMD: https://pmd.github.io/
 ARG PMD_VERSION=7.0.0
