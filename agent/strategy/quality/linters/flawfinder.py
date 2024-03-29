@@ -1,6 +1,5 @@
 import csv
 import json
-import re
 
 from agent.utils import run_logged
 

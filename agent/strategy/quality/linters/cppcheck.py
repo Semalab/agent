@@ -23,6 +23,9 @@ class CppCheck:
             cwd=directories.repository
         )
 
+        if not output_path.is_file():
+            return
+
         with open(output_path) as output_file, open(linters_dir / "cppcheck.json", "w") as json_file:
             json.dump(
                 [match.groupdict()

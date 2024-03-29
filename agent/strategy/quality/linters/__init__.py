@@ -1,5 +1,6 @@
 from agent.strategy.quality.linters.cppcheck import CppCheck
 from agent.strategy.quality.linters.flawfinder import FlawFinder
+from agent.strategy.quality.linters.pmd import PMD
 
 
 class Linters:
@@ -10,6 +11,7 @@ class Linters:
     LINTERS = [
         CppCheck(),
         FlawFinder(),
+        PMD()
     ]
 
     def run(self, directories):
