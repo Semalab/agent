@@ -42,6 +42,8 @@ RUN set -eux; \
 # ---------- linters ----------
 RUN python -m pip install --no-cache-dir flawfinder pylint
 
+RUN gem install rubocop
+
 # PMD: https://pmd.github.io/
 ARG PMD_VERSION=7.0.0
 RUN set -eux; \
