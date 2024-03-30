@@ -37,16 +37,16 @@ class Repository:
         logger = logging.getLogger(__name__)
 
         match VCS.detect(repository):
-            case VCS.GIT:
-                return repository
             case VCS.SVN:
                 return cls.svn_to_git(repository)
+
             case None:
                 logger.warning("Unknown repository version control system")
-                return repository
+
             case VCS.MERCURIAL:
                 logger.warning("Unsupported version control system")
-                return repository
+
+        return repository
 
     @classmethod
     def svn_to_git(cls, repository_svn: Path) -> Path:
