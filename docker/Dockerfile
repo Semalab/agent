@@ -12,6 +12,24 @@ RUN set -eux; \
     ; \
     rm -rf /var/lib/apt/lists/*
 
+RUN echo 'gem: --no-document' >> ~/.gemrc
+
+# Node.js LTS
+ARG NODE_VERSION=20.12.0
+ARG NODE_HOME=/opt/node
+RUN set -eux; \
+    ARCH= ; \
+    case "$(dpkg-architecture --query DEB_BUILD_ARCH_CPU)" in \
+        amd64) ARCH='x64';; \
+        arm64) ARCH='arm64';; \
+        *) exit 1 ;; \
+    esac; \
+    mkdir -p ${NODE_HOME}; \
+    curl -fsSL \
+        https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-$ARCH.tar.xz | \
+        tar -xJC ${NODE_HOME} --strip-components=1
+ENV PATH ${NODE_HOME}/bin:$PATH
+
 # ---------- oss dependencies ----------
 WORKDIR /dependencies
 
@@ -43,6 +61,8 @@ RUN set -eux; \
 RUN python -m pip install --no-cache-dir flawfinder pylint
 
 RUN gem install rubocop
+
+RUN npm install --global jshint eslint typescript typescript-eslint
 
 # PMD: https://pmd.github.io/
 ARG PMD_VERSION=7.0.0
