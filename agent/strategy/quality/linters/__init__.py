@@ -1,8 +1,10 @@
-from agent.strategy.quality.linters.cppcheck import CppCheck
-from agent.strategy.quality.linters.flawfinder import FlawFinder
-from agent.strategy.quality.linters.pmd import PMD
-from agent.strategy.quality.linters.pylint import Pylint
-from agent.strategy.quality.linters.rubocop import RuboCop
+from .cppcheck import CppCheck
+from .flawfinder import FlawFinder
+from .pmd import PMD
+from .pylint import Pylint
+from .rubocop import RuboCop
+from .jshint import JSHint
+from .eslint import ESLint
 
 
 class Linters:
@@ -15,7 +17,9 @@ class Linters:
         FlawFinder(),
         PMD(),
         Pylint(),
-        RuboCop()
+        RuboCop(),
+        JSHint(),
+        ESLint()
     ]
 
     def run(self, directories):

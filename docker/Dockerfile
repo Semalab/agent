@@ -58,11 +58,23 @@ RUN set -eux; \
         -print | grep -q .
 
 # ---------- linters ----------
-RUN python -m pip install --no-cache-dir flawfinder pylint
+RUN python -m pip install --no-cache-dir \
+        flawfinder \
+        pylint
 
-RUN gem install rubocop
+RUN gem install \
+        rubocop
 
-RUN npm install --global jshint eslint typescript typescript-eslint
+WORKDIR /dependencies/js
+RUN npm install \
+        jshint \
+        eslint \
+        typescript \
+        typescript-eslint \
+        @typescript-eslint/eslint-plugin
+ENV PATH /dependencies/js/node_modules/.bin:$PATH
+
+WORKDIR /dependencies
 
 # PMD: https://pmd.github.io/
 ARG PMD_VERSION=7.0.0
