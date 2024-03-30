@@ -10,7 +10,14 @@ class ESLint:
 
         with open("/dependencies/js/.eslintrc.json", "w+") as config_file:
             json.dump({
-                "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended"]
+                "env": {
+                    "browser": True,
+                    "node": True
+                },
+                "extends": [
+                    "eslint:recommended",
+                    "plugin:@typescript-eslint/recommended"
+                ]
             }, config_file)
             config_file.flush()
 

@@ -10,7 +10,9 @@ class JSHint:
 
         with open(output_path, "w+") as output_file, open("/dependencies/js/.jshintrc.json", mode="w+") as config_file:
             json.dump({
-                "esversion": 21
+                "esversion": 11,
+                "browser": True,
+                "node": True
             }, config_file)
             config_file.flush()
 
