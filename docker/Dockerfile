@@ -26,7 +26,7 @@ RUN python -m pip install --no-cache-dir poetry==1.7.1
 
 # Node.js LTS
 ARG NODE_VERSION=20.12.0
-ARG NODE_HOME=/opt/node
+ENV NODE_HOME=/opt/node
 RUN set -eux; \
     ARCH= ; \
     case "$(dpkg-architecture --query DEB_BUILD_ARCH_CPU)" in \
@@ -39,6 +39,21 @@ RUN set -eux; \
         https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-$ARCH.tar.xz | \
         tar -xJC ${NODE_HOME} --strip-components=1
 ENV PATH ${NODE_HOME}/bin:$PATH
+
+ARG SWIFT_VERSION=5.10
+ENV SWIFT_HOME=/opt/swift
+RUN set -eux; \
+    ARCH= ; \
+    case "$(dpkg-architecture --query DEB_BUILD_GNU_CPU)" in \
+        x86_64) ARCH='';; \
+        aarch64) ARCH='-aarch64';; \
+        *) exit 1 ;; \
+    esac; \
+    mkdir -p ${SWIFT_HOME}; \
+    curl -fsSL \
+        https://download.swift.org/swift-${SWIFT_VERSION}-release/ubuntu2204/swift-${SWIFT_VERSION}-RELEASE/swift-${SWIFT_VERSION}-RELEASE-ubuntu22.04$ARCH.tar.gz | \
+        tar -xzC ${NODE_HOME} --strip-components=2
+ENV PATH ${SWIFT_HOME}/bin:$PATH
 
 # ---------- oss dependencies ----------
 WORKDIR /dependencies
@@ -66,6 +81,17 @@ RUN set -eux; \
         -exec sed -ie 's/return {*} if current_tree.count_recursive(MAX_TREE_SIZE) >= MAX_TREE_SIZE/#/g' {} ';' \
         # print and grep just to make sure that some files were found - otherwise, find happily returns 0
         -print | grep -q .
+
+ARG SWIFTLINT_VERSION=0.54.0
+RUN set -eux; \
+    curl -fsSL \
+        https://github.com/realm/SwiftLint/releases/download/${SWIFTLINT_VERSION}/swiftlint_linux.zip \
+        --output swiftlint.zip \
+    ; \
+    mkdir swiftlint; \
+    unzip swiftlint.zip -d swiftlint; \
+    ln -s /dependencies/swiftlint/swiftlint /usr/local/bin/swiftlint; \
+    rm swiftlint.zip
 
 # ---------- linters ----------
 RUN python -m pip install --no-cache-dir \
