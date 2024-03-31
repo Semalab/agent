@@ -51,8 +51,8 @@ def main(repository: Path, output: Path, scantypes: tuple[str, ...]):
             Dependencies(),
             DependencyCheck(),
             Scancode(),
-            Linters(),
             Linguist(),
+            Linters(),
             BackendAnalysis("backend-commitanalysis"),
             BackendAnalysis("backend-gitblame")
         ]

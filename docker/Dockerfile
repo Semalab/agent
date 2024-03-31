@@ -1,6 +1,13 @@
 FROM python:3.11-bookworm
 
 RUN set -eux; \
+    curl -fsSL \
+        https://packages.microsoft.com/config/debian/$(. /etc/os-release; echo $VERSION_ID)/packages-microsoft-prod.deb \
+        --output packages-microsoft-prod.deb; \
+    dpkg -i packages-microsoft-prod.deb; \
+    rm packages-microsoft-prod.deb
+
+RUN set -eux; \
     apt-get update; \
     apt-get install -y --no-install-recommends \
         subversion \
@@ -9,10 +16,13 @@ RUN set -eux; \
         cmake \
         openjdk-17-jre-headless \
         cppcheck \
+        dotnet-sdk-8.0 \
     ; \
     rm -rf /var/lib/apt/lists/*
 
 RUN echo 'gem: --no-document' >> ~/.gemrc
+
+RUN python -m pip install --no-cache-dir poetry==1.7.1
 
 # Node.js LTS
 ARG NODE_VERSION=20.12.0
@@ -65,6 +75,8 @@ RUN python -m pip install --no-cache-dir \
 RUN gem install \
         rubocop
 
+# Node.js tools are not installed globally since it's either recommended to install locally,
+# or will only work with peer dependencies which are installed locally.
 WORKDIR /dependencies/js
 RUN npm install \
         jshint \
@@ -72,7 +84,18 @@ RUN npm install \
         typescript \
         typescript-eslint \
         @typescript-eslint/eslint-plugin
+ENV ESLINT_HOME /dependencies/js
 ENV PATH /dependencies/js/node_modules/.bin:$PATH
+
+RUN dotnet tool install --global \
+    roslynator.dotnet.cli
+ENV PATH $PATH:/root/.dotnet/tools
+
+WORKDIR /dependencies/roslynator
+RUN set -eux; \
+    dotnet new console; \
+    dotnet add package Roslynator.Analyzers; \
+    dotnet add package Roslynator.CodeAnalysis.Analyzers
 
 WORKDIR /dependencies
 
@@ -113,8 +136,6 @@ RUN set -eux; \
 COPY out/backend-*/*-jar-with-dependencies.jar /dependencies/
 
 WORKDIR /src
-
-RUN python -m pip install --no-cache-dir poetry==1.7.1
 COPY main.py readme.md pyproject.toml poetry.lock ./
 COPY agent/ agent/
 
