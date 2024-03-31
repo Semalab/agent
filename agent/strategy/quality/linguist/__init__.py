@@ -12,6 +12,7 @@ class Linguist:
         linguist_dir = directories.mkdir("linguist")
 
         self.git_config(directories)
+        self.git_meta(directories, linguist_dir)
         self.list_files(directories, linguist_dir)
         self.linguist(directories, linguist_dir)
         self.wc(directories, linguist_dir)
@@ -43,6 +44,23 @@ class Linguist:
             cwd=directories.repository,
             check=True
         )
+
+    def git_meta(self, directories, linguist_dir):
+        with open(linguist_dir / "git-commit-id", "w") as out_file:
+            run_logged(
+                ["git", "rev-parse", "HEAD"],
+                log_dir=directories.log_dir,
+                cwd=directories.repository,
+                stdout=out_file
+            )
+
+        with open(linguist_dir / "git-commit-timestamp", "w") as out_file:
+            run_logged(
+                ["git", "show", "--no-patch", "--format=tformat:%cI"],
+                log_dir=directories.log_dir,
+                cwd=directories.repository,
+                stdout=out_file
+            )
 
     def list_files(self, directories, linguist_dir):
         """
