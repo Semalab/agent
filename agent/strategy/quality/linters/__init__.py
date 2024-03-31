@@ -8,6 +8,7 @@ from .rubocop import RuboCop
 from .jshint import JSHint
 from .eslint import ESLint
 from .roslynator import Roslynator
+from .swiftlint import SwiftLint
 
 
 class Linters:
@@ -23,7 +24,8 @@ class Linters:
         RuboCop(),
         JSHint(),
         ESLint(),
-        Roslynator()
+        Roslynator(),
+        SwiftLint()
     ]
 
     def run(self, directories):
