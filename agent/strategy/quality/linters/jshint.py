@@ -1,4 +1,5 @@
 import json
+import tempfile
 
 from agent.utils import run_logged
 from . import utils
@@ -8,7 +9,7 @@ class JSHint:
     def run(self, directories, linters_dir):
         output_path = linters_dir / "jshint.txt"
 
-        with open(output_path, "w+") as output_file, open("/dependencies/js/.jshintrc.json", mode="w+") as config_file:
+        with open(output_path, "w+") as output_file, tempfile.NamedTemporaryFile(suffix=".jshintrc.json", mode="w+") as config_file:
             json.dump({
                 "esversion": 11,
                 "browser": True,

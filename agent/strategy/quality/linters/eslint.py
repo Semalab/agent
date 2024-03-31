@@ -1,4 +1,6 @@
 import json
+import os
+from pathlib import Path
 
 from agent.utils import run_logged
 from . import utils
@@ -8,7 +10,7 @@ class ESLint:
     def run(self, directories, linters_dir):
         output_path = linters_dir / "eslint.txt"
 
-        with open("/dependencies/js/.eslintrc.json", "w+") as config_file:
+        with open(Path(os.environ["ESLINT_HOME"]) / ".eslintrc.json", mode="w+") as config_file:
             json.dump({
                 "env": {
                     "browser": True,
