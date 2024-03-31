@@ -15,3 +15,11 @@ To just get a shell into the container, without running a scan:
 ```sh
 make shell
 ```
+
+To run only a subset of the scans, for faster testing during development, set the `AGENT_ARGS` environment variable to a space-delimited list of lowercased scan names:
+
+```sh
+ export AGENT_ARGS="linguist linters"
+```
+
+Note that some of the linters need the file list from the linguist step.
