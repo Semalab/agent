@@ -121,8 +121,8 @@ RUN set -eux; \
     rm swiftlint.zip
 
 RUN python -m pip install --no-cache-dir \
-        flawfinder \
-        pylint
+        flawfinder==2.0.19 \
+        pylint==2.15.7
 
 RUN gem install \
         rubocop
@@ -152,15 +152,15 @@ RUN set -eux; \
 WORKDIR /dependencies
 
 # PMD: https://pmd.github.io/
-ARG PMD_VERSION=7.0.0
+ARG PMD_VERSION=6.50.0
 RUN set -eux; \
     curl -fsSL \
-        https://github.com/pmd/pmd/releases/download/pmd_releases%2F${PMD_VERSION}/pmd-dist-${PMD_VERSION}-bin.zip \
+        https://github.com/pmd/pmd/releases/download/pmd_releases%2F${PMD_VERSION}/pmd-bin-${PMD_VERSION}.zip \
         --output pmd.zip \
     ; \
     unzip pmd.zip; \
-    mv pmd-* pmd ; \
-    ln -s /dependencies/pmd/bin/pmd /usr/local/bin/pmd; \
+    mv pmd-* pmd; \
+    ln -s /dependencies/pmd/bin/run.sh /usr/local/bin/run-pmd; \
     rm pmd.zip
 
 COPY cache/ cache/
