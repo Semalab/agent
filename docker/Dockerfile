@@ -1,3 +1,24 @@
+FROM buildpack-deps:bookworm as build-cppcheck
+
+RUN set -eux; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends \
+        libpcre3-dev \
+    ; \
+    rm -rf /var/lib/apt/lists/*
+
+ARG CPPCHECK_VERSION=2.7
+WORKDIR /root/cppcheck
+RUN set -eux; \
+    curl -fsSL \
+        https://github.com/danmar/cppcheck/archive/refs/tags/${CPPCHECK_VERSION}.tar.gz \
+        --output cppcheck.tar.gz \
+    ; \
+    tar -xf cppcheck.tar.gz --strip-components=1; \
+    rm cppcheck.tar.gz; \
+    mkdir -p /opt/cppcheck; \
+    make FILESDIR=/dependencies/cppcheck DESTDIR=/opt/cppcheck/ PREFIX="" MATCHCOMPILER=yes HAVE_RULES=yes CXXFLAGS="-O2 -DNDEBUG -Wall -Wno-sign-compare -Wno-unused-function" install
+
 FROM python:3.11-bookworm
 
 RUN set -eux; \
@@ -15,7 +36,7 @@ RUN set -eux; \
         ruby-dev \
         cmake \
         openjdk-17-jre-headless \
-        cppcheck \
+        libpcre3 \
         dotnet-sdk-8.0 \
     ; \
     rm -rf /var/lib/apt/lists/*
@@ -82,6 +103,12 @@ RUN set -eux; \
         # print and grep just to make sure that some files were found - otherwise, find happily returns 0
         -print | grep -q .
 
+# ---------- linters ----------
+
+COPY --from=build-cppcheck /opt/cppcheck/bin/ /dependencies/cppcheck/
+COPY --from=build-cppcheck /opt/cppcheck/dependencies/cppcheck/ /dependencies/cppcheck/
+ENV PATH /dependencies/cppcheck:$PATH
+
 ARG SWIFTLINT_VERSION=0.54.0
 RUN set -eux; \
     curl -fsSL \
@@ -93,7 +120,6 @@ RUN set -eux; \
     ln -s /dependencies/swiftlint/swiftlint /usr/local/bin/swiftlint; \
     rm swiftlint.zip
 
-# ---------- linters ----------
 RUN python -m pip install --no-cache-dir \
         flawfinder \
         pylint
