@@ -17,7 +17,29 @@ RUN set -eux; \
     tar -xf cppcheck.tar.gz --strip-components=1; \
     rm cppcheck.tar.gz; \
     mkdir -p /opt/cppcheck; \
-    make FILESDIR=/dependencies/cppcheck DESTDIR=/opt/cppcheck/ PREFIX="" MATCHCOMPILER=yes HAVE_RULES=yes CXXFLAGS="-O2 -DNDEBUG -Wall -Wno-sign-compare -Wno-unused-function" install
+    make \
+        FILESDIR=/dependencies/cppcheck \
+        DESTDIR=/opt/cppcheck/ \
+        PREFIX="" \
+        MATCHCOMPILER=yes \
+        HAVE_RULES=yes \
+        CXXFLAGS="-O2 -DNDEBUG" \
+        install
+
+
+# Build OpenSSL 1.1 for .NET Core 3.1 -- remove when upgrading .NET
+FROM buildpack-deps:bookworm as build-openssl
+
+WORKDIR /root/openssl
+RUN set -eux; \
+    curl -fsSL https://github.com/openssl/openssl/releases/download/OpenSSL_1_1_1w/openssl-1.1.1w.tar.gz \
+        --output openssl.tar.gz \
+    ; \
+    tar -xf openssl.tar.gz --strip-components=1; \
+    rm openssl.tar.gz; \
+    ./config --prefix=/opt/openssl --openssldir=/usr/lib/ssl shared zlib; \
+    make install_sw
+
 
 FROM python:3.11-bookworm
 
@@ -37,7 +59,7 @@ RUN set -eux; \
         cmake \
         openjdk-17-jre-headless \
         libpcre3 \
-        dotnet-sdk-8.0 \
+        # dotnet-sdk-8.0 \
     ; \
     rm -rf /var/lib/apt/lists/*
 
@@ -125,29 +147,45 @@ RUN python -m pip install --no-cache-dir \
         pylint==2.15.7
 
 RUN gem install \
-        rubocop
+        rubocop:0.67.2
 
 # Node.js tools are not installed globally since it's either recommended to install locally,
 # or will only work with peer dependencies which are installed locally.
 WORKDIR /dependencies/js
 RUN npm install \
-        jshint \
-        eslint \
-        typescript \
-        typescript-eslint \
-        @typescript-eslint/eslint-plugin
-ENV ESLINT_HOME /dependencies/js
+        eslint@6.7.2 \
+        jshint@2.11.0-rc1 \
+        tslint@5.20.1 \
+        typescript@3.7.3
+        # Required for newer versions of eslint with support for TS linting via plugins
+        # typescript-eslint \
+        # @typescript-eslint/eslint-plugin
+ENV JSTOOLS_HOME /dependencies/js
 ENV PATH /dependencies/js/node_modules/.bin:$PATH
+COPY lib/js/ .
 
-RUN dotnet tool install --global \
-    roslynator.dotnet.cli
-ENV PATH $PATH:/root/.dotnet/tools
-
-WORKDIR /dependencies/roslynator
+# .NET Core 3.1 is required for the version of Roslynator we are using
+# Remove this install script and use the apt install command on upgrade
+WORKDIR /dependencies
+COPY --from=build-openssl /opt/openssl/ /opt/openssl/
+ENV LD_LIBRARY_PATH /opt/openssl/lib:$LD_LIBRARY_PATH
 RUN set -eux; \
-    dotnet new console; \
-    dotnet add package Roslynator.Analyzers; \
-    dotnet add package Roslynator.CodeAnalysis.Analyzers
+    curl -fsSL https://dotnet.microsoft.com/download/dotnet/scripts/v1/dotnet-install.sh \
+        --output dotnet-install.sh \
+    ; \
+    chmod +x dotnet-install.sh; \
+    ./dotnet-install.sh --version 3.1.426
+ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT 1
+ENV DOTNET_ROOT /root/.dotnet
+ENV PATH $PATH:/root/.dotnet:/root/.dotnet/tools
+RUN dotnet tool install --global Roslynator.DotNet.Cli --version 0.1.0
+
+# Required for newer versions of Roslynator
+# WORKDIR /dependencies/roslynator
+# RUN set -eux; \
+#     dotnet new console; \
+#     dotnet add package Roslynator.Analyzers; \
+#     dotnet add package Roslynator.CodeAnalysis.Analyzers
 
 WORKDIR /dependencies
 
@@ -164,6 +202,16 @@ RUN set -eux; \
     rm pmd.zip
 
 COPY cache/ cache/
+# Tailor for Swift linting
+RUN set -eux; \
+    curl -fsSL \
+        https://github.com/sleekbyte/tailor/releases/download/v0.12.0/tailor-0.12.0.zip \
+        --output tailor.zip \
+    ; \
+    unzip tailor.zip; \
+    mv tailor-* tailor; \
+    ln -s /dependencies/tailor/bin/tailor /usr/local/bin/tailor; \
+    rm tailor.zip
 
 # dependency_check: https://github.com/jeremylong/DependencyCheck
 ARG DEPENDENCY_CHECK_VERSION=9.0.7

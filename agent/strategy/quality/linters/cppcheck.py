@@ -1,7 +1,6 @@
 import shutil
 
 from agent.utils import run_logged
-from . import utils
 
 
 class CppCheck:

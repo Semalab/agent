@@ -1,18 +1,19 @@
+import os
+from pathlib import Path
 import shutil
 
 from agent.utils import run_logged
 
 
-class RuboCop:
+class TSLint:
     def run(self, path, directories, linters_dir):
-        output_path = linters_dir / "rubocop.tmp"
+        output_path = linters_dir / "tslint.tmp"
+        config_path = Path(os.environ["JSTOOLS_HOME"]) / "tslint.json"
 
         run_logged(
             [
-                "rubocop",
-                "--cache", "false",
-                # "--lint",
-                # "--format", "emacs",
+                "tslint",
+                "--config", config_path,
                 "--out", output_path,
                 path
             ],
@@ -23,5 +24,5 @@ class RuboCop:
         if not output_path.is_file():
             return
 
-        with open(output_path) as output_file, open(linters_dir / "rubocop.txt", "a") as combined_file:
+        with open(output_path) as output_file, open(linters_dir / "tslint.txt", "a") as combined_file:
             shutil.copyfileobj(output_file, combined_file)

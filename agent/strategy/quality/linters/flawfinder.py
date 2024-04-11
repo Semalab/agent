@@ -1,5 +1,3 @@
-import shutil
-
 from agent.utils import run_logged
 
 

@@ -3,19 +3,15 @@ import shutil
 from agent.utils import run_logged
 
 
-class Roslynator:
+class Tailor:
     def run(self, path, directories, linters_dir):
-        output_path = linters_dir / "roslynator.tmp"
+        output_path = linters_dir / "tailor.tmp"
 
         with open(output_path, "w+") as output_file:
             run_logged(
                 [
-                    "roslynator",
-                    "analyze",
-                    # Required for newer versions of Roslynator
-                    # "--analyzer-assemblies", (Path.home() / ".nuget" / "packages"),
-                    # "--severity-level", "info",
-                    # "--output", output_path
+                    "tailor",
+                    "--no-color",
                     path
                 ],
                 log_dir=directories.log_dir,
@@ -25,5 +21,5 @@ class Roslynator:
 
             output_file.seek(0)
 
-            with open(linters_dir / "roslynator.txt", "a") as combined_file:
+            with open(linters_dir / "tailor.txt", "a") as combined_file:
                 shutil.copyfileobj(output_file, combined_file)
