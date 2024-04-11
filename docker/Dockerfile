@@ -201,7 +201,6 @@ RUN set -eux; \
     ln -s /dependencies/pmd/bin/run.sh /usr/local/bin/run-pmd; \
     rm pmd.zip
 
-COPY cache/ cache/
 # Tailor for Swift linting
 RUN set -eux; \
     curl -fsSL \
@@ -212,6 +211,9 @@ RUN set -eux; \
     mv tailor-* tailor; \
     ln -s /dependencies/tailor/bin/tailor /usr/local/bin/tailor; \
     rm tailor.zip
+
+# Comment out this line to bootstrap
+COPY --from=ghcr.io/semalab/agent:latest /dependencies/dependency-check/data/ /dependencies/cache/dependency-check/
 
 # dependency_check: https://github.com/jeremylong/DependencyCheck
 ARG DEPENDENCY_CHECK_VERSION=9.0.7
