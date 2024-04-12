@@ -1,5 +1,3 @@
-import os
-from pathlib import Path
 import shutil
 
 from agent.utils import run_logged
@@ -11,7 +9,7 @@ class JSLinters:
 
         run_logged(
             [
-                "node", Path(os.environ["JSTOOLS_HOME"]) / "jslinters.js",
+                "jslinters",
                 "-o", output_path,
                 "-i", path
             ],

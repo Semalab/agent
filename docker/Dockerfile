@@ -47,7 +47,7 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 RUN set -eux; \
     curl -fsSL \
-        https://packages.microsoft.com/config/debian/$(. /etc/os-release; echo "$VERSION_ID")/packages-microsoft-prod.deb \
+        "https://packages.microsoft.com/config/debian/$(. /etc/os-release; echo "$VERSION_ID")/packages-microsoft-prod.deb" \
         --output packages-microsoft-prod.deb \
     ; \
     dpkg -i packages-microsoft-prod.deb; \
@@ -230,7 +230,7 @@ RUN npm install
     # Required for newer versions of eslint with support for TS linting via plugins
     # typescript-eslint \
     # @typescript-eslint/eslint-plugin
-ENV PATH /dependencies/js/node_modules/.bin:$PATH
+ENV PATH /dependencies/js/node_modules/.bin:/dependencies/js:$PATH
 ENV JSTOOLS_HOME /dependencies/js
 
 # backend services
