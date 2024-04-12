@@ -226,7 +226,7 @@ RUN set -eux; \
 # or will only work with peer dependencies which are installed locally.
 WORKDIR /dependencies/js
 COPY lib/js/ ./
-RUN npm install
+RUN npm install && chmod +x jslinters
     # Required for newer versions of eslint with support for TS linting via plugins
     # typescript-eslint \
     # @typescript-eslint/eslint-plugin
