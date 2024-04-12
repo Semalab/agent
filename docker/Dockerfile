@@ -151,19 +151,6 @@ RUN python -m pip install --no-cache-dir \
 RUN gem install \
         rubocop:0.67.2
 
-# Node.js tools are not installed globally since it's either recommended to install locally,
-# or will only work with peer dependencies which are installed locally.
-WORKDIR /dependencies/js
-RUN npm install \
-        eslint@6.7.2 \
-        jshint@2.11.0-rc1 \
-        tslint@5.20.1 \
-        typescript@3.7.3
-        # Required for newer versions of eslint with support for TS linting via plugins
-        # typescript-eslint \
-        # @typescript-eslint/eslint-plugin
-ENV PATH /dependencies/js/node_modules/.bin:$PATH
-
 # .NET Core 3.1 is required for the version of Roslynator we are using
 # Remove this install script and use the apt install command on upgrade
 WORKDIR /dependencies
@@ -213,6 +200,7 @@ RUN set -eux; \
     rm tailor.zip
 
 # Comment out this line to bootstrap
+# hadolint ignore=DL3022
 COPY --from=ghcr.io/semalab/agent:latest /dependencies/dependency-check/data/ /dependencies/cache/dependency-check/
 
 # dependency_check: https://github.com/jeremylong/DependencyCheck
@@ -234,8 +222,16 @@ RUN set -eux; \
     (if [ -d cache/dependency-check ]; then cp -r cache/dependency-check/ dependency-check/data/; fi); \
     dependency-check --updateonly
 
+# Node.js tools are not installed globally since it's either recommended to install locally,
+# or will only work with peer dependencies which are installed locally.
+WORKDIR /dependencies/js
+COPY lib/js/ ./
+RUN npm install
+    # Required for newer versions of eslint with support for TS linting via plugins
+    # typescript-eslint \
+    # @typescript-eslint/eslint-plugin
+ENV PATH /dependencies/js/node_modules/.bin:$PATH
 ENV JSTOOLS_HOME /dependencies/js
-COPY lib/js/ js/
 
 # backend services
 COPY out/backend-*/*-jar-with-dependencies.jar /dependencies/
