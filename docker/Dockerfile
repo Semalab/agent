@@ -43,10 +43,13 @@ RUN set -eux; \
 
 FROM python:3.11-bookworm
 
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
 RUN set -eux; \
     curl -fsSL \
-        https://packages.microsoft.com/config/debian/$(. /etc/os-release; echo $VERSION_ID)/packages-microsoft-prod.deb \
-        --output packages-microsoft-prod.deb; \
+        https://packages.microsoft.com/config/debian/$(. /etc/os-release; echo "$VERSION_ID")/packages-microsoft-prod.deb \
+        --output packages-microsoft-prod.deb \
+    ; \
     dpkg -i packages-microsoft-prod.deb; \
     rm packages-microsoft-prod.deb
 
@@ -99,20 +102,18 @@ RUN set -eux; \
 ENV PATH ${SWIFT_HOME}/bin:$PATH
 
 # ---------- oss dependencies ----------
-WORKDIR /dependencies
 
 # scancode: https://github.com/nexB/scancode-toolkit
 ARG SCANCODE_VERSION=32.0.8
+WORKDIR /dependencies/scancode
 RUN set -eux; \
     curl -fsSL \
         https://github.com/nexB/scancode-toolkit/releases/download/v${SCANCODE_VERSION}/scancode-toolkit-v${SCANCODE_VERSION}_py3.11-linux.tar.gz \
         --output scancode.tar.gz \
     ; \
-    mkdir scancode; \
-    tar -xf scancode.tar.gz -C scancode --strip-components=1; \
+    tar -xf scancode.tar.gz --strip-components=1; \
     ln -s /dependencies/scancode/scancode /usr/local/bin/scancode; \
     rm scancode.tar.gz; \
-    cd scancode; \
     ./configure
 
 # linguist: https://github.com/github-linguist/linguist
@@ -132,6 +133,7 @@ COPY --from=build-cppcheck /opt/cppcheck/dependencies/cppcheck/ /dependencies/cp
 ENV PATH /dependencies/cppcheck:$PATH
 
 ARG SWIFTLINT_VERSION=0.54.0
+WORKDIR /dependencies
 RUN set -eux; \
     curl -fsSL \
         https://github.com/realm/SwiftLint/releases/download/${SWIFTLINT_VERSION}/swiftlint_linux.zip \
@@ -160,9 +162,7 @@ RUN npm install \
         # Required for newer versions of eslint with support for TS linting via plugins
         # typescript-eslint \
         # @typescript-eslint/eslint-plugin
-ENV JSTOOLS_HOME /dependencies/js
 ENV PATH /dependencies/js/node_modules/.bin:$PATH
-COPY lib/js/ .
 
 # .NET Core 3.1 is required for the version of Roslynator we are using
 # Remove this install script and use the apt install command on upgrade
@@ -233,6 +233,9 @@ RUN set -eux; \
     rm dependency-check.zip; \
     (if [ -d cache/dependency-check ]; then cp -r cache/dependency-check/ dependency-check/data/; fi); \
     dependency-check --updateonly
+
+ENV JSTOOLS_HOME /dependencies/js
+COPY lib/js/ js/
 
 # backend services
 COPY out/backend-*/*-jar-with-dependencies.jar /dependencies/

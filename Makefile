@@ -5,7 +5,7 @@ BACKEND_ACTIVITYPERSISTENCE_PATH ?= ../backend-activitypersistence
 BACKEND_COMMITANALYSIS_PATH ?= ../backend-commitanalysis
 BACKEND_GITBLAME_PATH ?= ../backend-gitblame
 
-.PHONY: all build-jars build run-docker run shell save-cache clean
+.PHONY: all build-jars build run-docker run shell clean lint
 
 all: run
 
@@ -27,7 +27,6 @@ $(eval $(call build-jar,$(BACKEND_GITBLAME_PATH),out/backend-core/backend-core.j
 build-jars: out/backend-commitanalysis/backend-commitanalysis.jar out/backend-gitblame/backend-gitblame.jar
 
 build: build-jars
-	mkdir -p cache
 	docker build --platform linux/amd64 --tag $(AGENT_TAG) --file ./docker/Dockerfile ./
 
 run-docker: build
@@ -44,3 +43,8 @@ run: run-docker
 
 clean:
 	rm -rf out
+
+lint:
+	docker run \
+		--mount type=bind,source="$(abspath ./.hadolint.yaml)",target=/.config/hadolint.yaml \
+		--rm --interactive hadolint/hadolint < docker/Dockerfile
