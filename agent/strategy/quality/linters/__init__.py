@@ -70,7 +70,7 @@ class Linters:
         for file in linguist.files(directories, linguist_dir):
             linters = []
 
-            match file.suffix.lower():
+            match file.suffix.lower():  # noqa: F999
                 case ".java":
                     linters = [self.pmd]
                 case ".cpp":
