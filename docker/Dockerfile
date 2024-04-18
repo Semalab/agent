@@ -44,6 +44,9 @@ RUN set -eux; \
 # ---------- linters ----------
 RUN python -m pip install --no-cache-dir flawfinder
 
+# ---------- techdebt ----------
+RUN python -m pip install --no-cache-dir lizard
+
 COPY cache/ cache/
 
 # dependency_check: https://github.com/jeremylong/DependencyCheck
