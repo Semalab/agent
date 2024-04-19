@@ -11,7 +11,7 @@ from agent.directories import Directories
 from agent.repository import Repository
 from agent.strategy.backend_analysis import BackendAnalysis
 from agent.strategy.oss import Dependencies, DependencyCheck, Scancode
-from agent.strategy.quality import Linguist, Linters
+from agent.strategy.quality import Linguist, Linters, TechDebt
 
 
 @click.command()
@@ -53,6 +53,7 @@ def main(repository: Path, output: Path, scantypes: tuple[str, ...]):
             Scancode(),
             Linguist(),
             Linters(),
+            TechDebt(),
             BackendAnalysis("backend-commitanalysis"),
             BackendAnalysis("backend-gitblame")
         ]

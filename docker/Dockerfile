@@ -244,3 +244,12 @@ COPY agent/ agent/
 RUN poetry install
 
 ENTRYPOINT ["poetry", "run", "cli"]
+
+# install cloc command 
+RUN set -eux; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends \
+        cloc
+    
+# ---------- techdebt ----------
+RUN python -m pip install --no-cache-dir lizard
