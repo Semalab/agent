@@ -1,0 +1,3 @@
+[submodule "agent/strategy/ai_engine/ai_engine"]
+	path = agent/strategy/ai_engine/ai_engine
+	url = git@github.com:Semalab/ai_engine.git
