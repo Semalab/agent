@@ -12,6 +12,7 @@ from agent.repository import Repository
 from agent.strategy.backend_analysis import BackendAnalysis
 from agent.strategy.oss import Dependencies, DependencyCheck, Scancode
 from agent.strategy.quality import Linguist, Linters
+from agent.strategy.ai_engine import GBOM
 
 
 @click.command()
@@ -53,7 +54,8 @@ def main(repository: Path, output: Path):
             Linters(),
             Linguist(),
             BackendAnalysis("backend-commitanalysis"),
-            BackendAnalysis("backend-gitblame")
+            BackendAnalysis("backend-gitblame"),
+            GBOM()
         ]
 
         directories = Directories(repository=repository.path, output=archive_root)
