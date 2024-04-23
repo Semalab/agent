@@ -74,6 +74,14 @@ RUN python -m pip install --no-cache-dir poetry==1.7.1
 COPY main.py readme.md pyproject.toml poetry.lock ./
 COPY agent/ agent/
 
+## Installation for ai_engine detection
+RUN cd agent/strategy/ai_engine/ai_engine \
+    && pip install -r requirements.txt   --no-cache-dir \
+    && cd code-chunker \
+    && pip install -r requirements.txt   --no-cache-dir 
+
+ENV TOKENIZERS_PARALLELISM=true
+
 # install agent and python dependencies
 RUN poetry install
 
