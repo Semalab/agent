@@ -1,4 +1,3 @@
-from agent.strategy.quality.techdebt.lizard_parser import lizardParser
 from agent.strategy.quality.techdebt.cloc_parser import ClocParser
 
 class TechDebt:
@@ -7,7 +6,6 @@ class TechDebt:
     """
 
     techdebt_parsers = [
-                        lizardParser(),
                         ClocParser()
                     ]
 
