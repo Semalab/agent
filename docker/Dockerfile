@@ -126,7 +126,7 @@ RUN set -eux; \
         # print and grep just to make sure that some files were found - otherwise, find happily returns 0
         -print | grep -q .
 
-# ---------- linters ----------
+# ---------- Linters ----------
 
 COPY --from=build-cppcheck /opt/cppcheck/bin/ /dependencies/cppcheck/
 COPY --from=build-cppcheck /opt/cppcheck/dependencies/cppcheck/ /dependencies/cppcheck/
@@ -199,6 +199,12 @@ RUN set -eux; \
     ln -s /dependencies/tailor/bin/tailor /usr/local/bin/tailor; \
     rm tailor.zip
 
+# ---------- Tech debt analysis ----------
+RUN npm install -g cloc@2.5.1
+
+# DependencyCheck is added towards the end of the Dockerfile so we don't
+# rebuild all other dependencies when updating the database.
+
 # Comment out this line to bootstrap
 # hadolint ignore=DL3022
 COPY --from=ghcr.io/semalab/agent:latest /dependencies/dependency-check/data/ /dependencies/cache/dependency-check/
@@ -222,6 +228,8 @@ RUN set -eux; \
     (if [ -d cache/dependency-check ]; then cp -r cache/dependency-check/ dependency-check/data/; fi); \
     dependency-check --updateonly
 
+# Only our own code beyond this point
+
 # Node.js tools are not installed globally since it's either recommended to install locally,
 # or will only work with peer dependencies which are installed locally.
 WORKDIR /dependencies/js
@@ -244,6 +252,3 @@ COPY agent/ agent/
 RUN poetry install
 
 ENTRYPOINT ["poetry", "run", "cli"]
-
-# install cloc command 
-RUN npm install -g cloc@2.5.1

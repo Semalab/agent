@@ -1,13 +1,14 @@
 from agent.strategy.quality.techdebt.cloc_parser import ClocParser
 
+
 class TechDebt:
     """
     runs a variety of techdebt tools on the given repository
     """
 
     techdebt_parsers = [
-                        ClocParser()
-                    ]
+        ClocParser()
+    ]
 
     def run(self, directories):
         techdebt_dir = directories.mkdir("techdebt")
