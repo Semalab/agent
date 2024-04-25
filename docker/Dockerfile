@@ -76,8 +76,8 @@ COPY agent/ agent/
 
 ## Installation for ai_engine detection
 RUN cd agent/strategy/ai_engine/ai_engine \
-    && pip install -r requirements.txt   --no-cache-dir \
-    && cd code-chunker \
+    && pip install -r requirements.txt   --no-cache-dir
+RUN cd agent/strategy/ai_engine/ai_engine/code_chunker \
     && pip install -r requirements.txt   --no-cache-dir 
 
 ENV TOKENIZERS_PARALLELISM=true
