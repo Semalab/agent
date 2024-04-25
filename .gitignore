@@ -8,5 +8,7 @@
 # python
 __pycache__/
 
+node_modules/
+
 # other cache
 cache/
