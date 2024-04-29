@@ -1,12 +1,10 @@
 from agent.utils import run_logged
 import os
-import os 
 
 class GBOM:
     """
     runs AI Code monitor on given directories
     """
-    
 
     def move_output_file(self,source_dir, output_path: str):
         import shutil
@@ -33,5 +31,5 @@ class GBOM:
             log_dir=directories.log_dir
         )
         os.chdir(curr_work_dir)
-        self.move_output_file(directories.repository, directories.mkdir("GBOM"))    
+        self.move_output_file(directories.repository, directories.mkdir("GBOM"))
     
