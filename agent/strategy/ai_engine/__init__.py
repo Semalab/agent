@@ -17,7 +17,6 @@ class GBOM:
                 # Move the file to the destination directory
                 shutil.move(source_file, destination_file)
                 print(f"Moved '{filename}' to '{output_path}'")
-        
 
     def run(self, directories):
         curr_work_dir= os.getcwd()
