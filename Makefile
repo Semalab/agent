@@ -4,6 +4,7 @@ BACKEND_CORE_PATH ?= ../backend-core
 BACKEND_ACTIVITYPERSISTENCE_PATH ?= ../backend-activitypersistence
 BACKEND_COMMITANALYSIS_PATH ?= ../backend-commitanalysis
 BACKEND_GITBLAME_PATH ?= ../backend-gitblame
+AI_ENGINE_PATH ?= ../ai_engine
 
 .PHONY: all build-jars build run-docker run shell clean lint
 
@@ -20,11 +21,16 @@ out/$(notdir $(1))/$(notdir $(1)).jar: $(1)/pom.xml $(1)/src $(2)
 	cp $(1)/target/*.jar out/$(notdir $(1))
 endef
 
+add_ai_engine:
+	mkdir -p out/ai_engine \;
+	rsync -a  --exclude='.git*' --exclude='.github' --exclude='.vscode' --exclude='.husky' ../ai_engine/ out/ai_engine/
+	mv out/ai_engine/.env.production out/ai_engine/.env
+
 $(eval $(call build-jar,$(BACKEND_CORE_PATH),))
 $(eval $(call build-jar,$(BACKEND_ACTIVITYPERSISTENCE_PATH),out/backend-core/backend-core.jar))
 $(eval $(call build-jar,$(BACKEND_COMMITANALYSIS_PATH),out/backend-activitypersistence/backend-activitypersistence.jar))
 $(eval $(call build-jar,$(BACKEND_GITBLAME_PATH),out/backend-core/backend-core.jar))
-build-jars: out/backend-commitanalysis/backend-commitanalysis.jar out/backend-gitblame/backend-gitblame.jar
+build-jars: add_ai_engine out/backend-commitanalysis/backend-commitanalysis.jar out/backend-gitblame/backend-gitblame.jar 
 
 build: build-jars
 	docker build --platform linux/amd64 --tag $(AGENT_TAG) --file ./docker/Dockerfile ./
