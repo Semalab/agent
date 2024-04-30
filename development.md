@@ -1,13 +1,12 @@
 # Development
 
 You will need to have these projects checked out as siblings of this project:
-```
-backend-activitypersistence
-backend-commitanalysis
-backend-core
-backend-gitblame
-ai_engine
-```
+
+- backend-activitypersistence
+- backend-commitanalysis
+- backend-core
+- backend-gitblame
+- ai_engine
 
 ## Testing
 
