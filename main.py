@@ -3,6 +3,7 @@ import shutil
 import tempfile
 from datetime import datetime
 from pathlib import Path
+
 import click
 from click import ClickException
 
@@ -10,7 +11,6 @@ from agent.directories import Directories
 from agent.repository import Repository
 from agent.strategy.backend_analysis import BackendAnalysis
 from agent.strategy.oss import Dependencies, DependencyCheck, Scancode
-
 from agent.strategy.quality import Linguist, Linters, TechDebt
 from agent.strategy.ai_engine import GBOM
 

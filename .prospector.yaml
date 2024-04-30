@@ -1,7 +1,7 @@
 pyflakes:
   disable:
     # "Imported but unused" in __init__.py files
-    # Unfortunately, Prospector currently doesn't per-file ignores.
+    # Unfortunately, Prospector currently doesn't support per-file ignores.
     # Actual unused imports should still be caught by PyLint.
     - F401
 

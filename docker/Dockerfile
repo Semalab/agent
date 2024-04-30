@@ -228,6 +228,24 @@ RUN set -eux; \
     (if [ -d cache/dependency-check ]; then cp -r cache/dependency-check/ dependency-check/data/; fi); \
     dependency-check --updateonly
 
+# AI Engine
+ADD out/ai_engine.tar.gz /dependencies/ai_engine/
+COPY out/tuned_models/ /dependencies/ai_engine/tuned_models/
+WORKDIR /dependencies/ai_engine
+RUN --mount=type=cache,target=/root/.cache/pip set -eux; \
+    python -m venv .venv; \
+    source .venv/bin/activate; \
+    pip install -r requirements.txt -r code_chunker/requirements.txt; \
+    cp .env.production .env; \
+    printf '%s\n%s\n%s' \
+        '#!/bin/bash' \
+        'cd /dependencies/ai_engine' \
+        '.venv/bin/python main.py "$@"' \
+        > /usr/local/bin/ai_engine \
+    ; \
+    chmod +x /usr/local/bin/ai_engine
+ENV TOKENIZERS_PARALLELISM=true
+
 # Only our own code beyond this point
 
 # Node.js tools are not installed globally since it's either recommended to install locally,
@@ -247,9 +265,6 @@ COPY out/backend-*/*-jar-with-dependencies.jar /dependencies/
 WORKDIR /src
 COPY main.py readme.md pyproject.toml poetry.lock ./
 COPY agent/ agent/
-COPY out/ai_engine agent/strategy/ai_engine/ai_engine
-
-ENV TOKENIZERS_PARALLELISM=true
 
 # install agent and python dependencies
 RUN poetry install

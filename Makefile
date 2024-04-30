@@ -6,7 +6,7 @@ BACKEND_COMMITANALYSIS_PATH ?= ../backend-commitanalysis
 BACKEND_GITBLAME_PATH ?= ../backend-gitblame
 AI_ENGINE_PATH ?= ../ai_engine
 
-.PHONY: all build-jars build run-docker run shell clean lint
+.PHONY: all build-jars ai-engine-models build run-docker run shell clean lint
 
 all: run
 
@@ -21,18 +21,23 @@ out/$(notdir $(1))/$(notdir $(1)).jar: $(1)/pom.xml $(1)/src $(2)
 	cp $(1)/target/*.jar out/$(notdir $(1))
 endef
 
-add_ai_engine:
-	mkdir -p out/ai_engine \;
-	rsync -a  --exclude='.git*' --exclude='.github' --exclude='.vscode' --exclude='.husky' ../ai_engine/ out/ai_engine/
-	mv out/ai_engine/.env.production out/ai_engine/.env
+out/ai_engine.tar.gz: $(AI_ENGINE_PATH)
+	tar -czf out/ai_engine.tar.gz --exclude='.git*' --exclude='.github' --exclude='.vscode' --exclude='.husky' -C $(AI_ENGINE_PATH) .
+
+ai-engine-models: $(AI_ENGINE_PATH)/.env.production
+	$(eval include $(AI_ENGINE_PATH)/.env.production)
+	aws s3 sync "s3://sagemaker-ai-code-monitor-experiments/${TUNED_MODEL}" "out/${TUNED_MODEL}"
 
 $(eval $(call build-jar,$(BACKEND_CORE_PATH),))
 $(eval $(call build-jar,$(BACKEND_ACTIVITYPERSISTENCE_PATH),out/backend-core/backend-core.jar))
 $(eval $(call build-jar,$(BACKEND_COMMITANALYSIS_PATH),out/backend-activitypersistence/backend-activitypersistence.jar))
 $(eval $(call build-jar,$(BACKEND_GITBLAME_PATH),out/backend-core/backend-core.jar))
-build-jars: add_ai_engine out/backend-commitanalysis/backend-commitanalysis.jar out/backend-gitblame/backend-gitblame.jar 
+build-jars: out/backend-commitanalysis/backend-commitanalysis.jar out/backend-gitblame/backend-gitblame.jar
 
-build: build-jars
+build: build-jars out/ai_engine.tar.gz ai-engine-models
+	# Build and tag the build stages separately, to prevent cleanup with `docker system prune`
+	docker build --platform linux/amd64 --tag $(AGENT_TAG)-build-cppcheck --file ./docker/Dockerfile --target build-cppcheck ./
+	docker build --platform linux/amd64 --tag $(AGENT_TAG)-build-openssl --file ./docker/Dockerfile --target build-openssl ./
 	docker build --platform linux/amd64 --tag $(AGENT_TAG) --file ./docker/Dockerfile ./
 
 run-docker: build
