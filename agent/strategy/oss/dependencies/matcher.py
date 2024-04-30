@@ -31,6 +31,7 @@ PATTERNS = {
         "settings.gradle.kts",
     ],
     "yarn": ["yarn.lock"], 
+    "CMake": ["CMakeLists.txt"],
     "yarn2": [".yarnrc.yml"],  
     "Cargo": ["Cargo.lock", "Cargo.toml"],
     "RubyGems": ["*.gemspec"],
