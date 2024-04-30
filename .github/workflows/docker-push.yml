@@ -71,6 +71,10 @@ jobs:
             popd
           done
 
+      - name: Build JARs
+        working-directory: agent
+        run: make build-jars
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -81,10 +85,6 @@ jobs:
       - name: Prepare AI Engine
         working-directory: agent
         run: make out/ai_engine.tar.gz ai-engine-models
-
-      - name: Build JARs
-        working-directory: agent
-        run: make build-jars
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
