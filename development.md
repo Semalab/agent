@@ -1,5 +1,15 @@
 # Development
 
+You will need to have these projects checked out as siblings of this project:
+
+- backend-activitypersistence
+- backend-commitanalysis
+- backend-core
+- backend-gitblame
+- ai_engine
+
+## Testing
+
 For testing the agent locally, [Makefile](./Makefile) has some convenience scripts.
 
 For a full test run, which will first build the Docker image locally:
