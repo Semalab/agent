@@ -201,6 +201,8 @@ RUN set -eux; \
 
 # ---------- Tech debt analysis ----------
 RUN npm install -g cloc@2.5.1
+RUN python -m pip install --no-cache-dir \
+        lizard==1.17.10
 
 # DependencyCheck is added towards the end of the Dockerfile so we don't
 # rebuild all other dependencies when updating the database.
@@ -232,6 +234,7 @@ RUN set -eux; \
 ADD out/ai_engine.tar.gz /dependencies/ai_engine/
 COPY out/tuned_models/ /dependencies/ai_engine/tuned_models/
 WORKDIR /dependencies/ai_engine
+# hadolint ignore=DL3042
 RUN --mount=type=cache,target=/root/.cache/pip set -eux; \
     python -m venv .venv; \
     source .venv/bin/activate; \
