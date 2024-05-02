@@ -10,7 +10,7 @@ on:
 
 jobs:
   push:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-m
 
     permissions:
       packages: write
@@ -50,9 +50,17 @@ jobs:
           token: ${{ secrets.GH_PAT }}
           path: backend-gitblame
 
+      - name: Checkout ai_engine
+        uses: actions/checkout@v4
+        with:
+          repository: Semalab/ai_engine
+          token: ${{ secrets.GH_PAT }}
+          path: ai_engine
+          submodules: true
+
       - name: Checkout corresponding branches
         run: |
-          for repo in backend-core backend-activitypersistence backend-commitanalysis backend-gitblame; do
+          for repo in backend-core backend-activitypersistence backend-commitanalysis backend-gitblame ai_engine; do
             pushd $repo
             if git ls-remote --exit-code --heads origin ${{ github.ref_name }}; then
               git fetch origin ${{ github.ref_name }}
@@ -67,10 +75,16 @@ jobs:
         working-directory: agent
         run: make build-jars
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          platforms: arm64
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-2
+
+      - name: Prepare AI Engine
+        working-directory: agent
+        run: make out/ai_engine.tar.gz ai-engine-models
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -85,13 +99,6 @@ jobs:
             type=ref,event=branch
             type=semver,pattern={{version}}
 
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Build and export to Docker
         id: build
         uses: docker/build-push-action@v5
@@ -99,14 +106,3 @@ jobs:
           context: agent
           file: agent/docker/Dockerfile
           load: true
-
-      - name: Build and push
-        uses: docker/build-push-action@v5
-        with:
-          context: agent
-          file: agent/docker/Dockerfile
-          push: true
-          provenance: false # Disabled because GitHub UI shows unknown/unknown images with it
-          platforms: linux/amd64 # Add linux/arm64 when scancode becomes compatible with it
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}

@@ -201,6 +201,8 @@ RUN set -eux; \
 
 # ---------- Tech debt analysis ----------
 RUN npm install -g cloc@2.5.1
+RUN python -m pip install --no-cache-dir \
+        lizard==1.17.10
 
 # DependencyCheck is added towards the end of the Dockerfile so we don't
 # rebuild all other dependencies when updating the database.
@@ -227,6 +229,25 @@ RUN set -eux; \
     rm dependency-check.zip; \
     (if [ -d cache/dependency-check ]; then cp -r cache/dependency-check/ dependency-check/data/; fi); \
     dependency-check --updateonly
+
+# AI Engine
+ADD out/ai_engine.tar.gz /dependencies/ai_engine/
+COPY out/tuned_models/ /dependencies/ai_engine/tuned_models/
+WORKDIR /dependencies/ai_engine
+# hadolint ignore=DL3042
+RUN --mount=type=cache,target=/root/.cache/pip set -eux; \
+    python -m venv .venv; \
+    source .venv/bin/activate; \
+    pip install -r requirements.txt -r code_chunker/requirements.txt; \
+    cp .env.production .env; \
+    printf '%s\n%s\n%s' \
+        '#!/bin/bash' \
+        'cd /dependencies/ai_engine' \
+        '.venv/bin/python main.py "$@"' \
+        > /usr/local/bin/ai_engine \
+    ; \
+    chmod +x /usr/local/bin/ai_engine
+ENV TOKENIZERS_PARALLELISM=true
 
 # Only our own code beyond this point
 

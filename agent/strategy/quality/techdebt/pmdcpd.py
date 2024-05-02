@@ -1,7 +1,7 @@
 from agent.utils import run_logged
 import os
 
-class PmdCpdParser:
+class PmdCpd:
     def run(self, directories, techdebt_dir):
 
         languages = ["cpp","cs","ecmascript","java","objectivec","php","ruby", "scala"]
