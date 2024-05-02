@@ -1,5 +1,5 @@
 from agent.strategy.quality.techdebt.cloc_parser import ClocParser
-
+from agent.strategy.quality.techdebt.pmdcpd_parser import PmdCpdParser
 
 class TechDebt:
     """
@@ -7,7 +7,8 @@ class TechDebt:
     """
 
     techdebt_parsers = [
-        ClocParser()
+        ClocParser(),
+        PmdCpdParser()
     ]
 
     def run(self, directories):
