@@ -2,6 +2,7 @@ import logging
 
 from .cloc import Cloc
 from .lizard import Lizard
+from .pmdcpd import PmdCpd
 
 from agent.strategy.quality.linguist import Linguist
 
@@ -11,7 +12,8 @@ class TechDebt:
     """
 
     techdebt_per_repo = [
-        Cloc()
+        Cloc(),
+        PmdCpd()
     ]
 
     def run(self, directories):
