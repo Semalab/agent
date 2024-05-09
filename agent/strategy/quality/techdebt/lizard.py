@@ -4,8 +4,8 @@ from agent.utils import run_logged
 
 
 class Lizard:
-    supported_languages = ["c", "cpp", "cc", "mm", "cxx", "h", "hpp", "cs", "gd", "go", "java", "js",
-                                "lua", "m", "php", "py", "rb", "rs", "scala", "swift", "sdl", "ttcn", "ttcnpp", "ts"]
+    supported_languages = ["c", "cpp", "cc", "mm", "cxx", "h", "hpp", "cs", "gd", "go", "java",
+                           "js", "lua", "m", "php", "py", "rb", "rs", "scala", "swift", "sdl", "ttcn", "ttcnpp", "ts"]
 
     def run(self, path, directories, techdebt_dir):
         if any(ext == path.suffix[1:] for ext in self.supported_languages):
