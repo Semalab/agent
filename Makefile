@@ -46,7 +46,8 @@ run-docker: build
 		--mount type=bind,source="$(abspath $(AGENT_OUT))",target=/out \
 		--rm $(AGENT_RUN_ARGS) $(AGENT_TAG) $(AGENT_CLI_ARGS)
 
-shell: AGENT_RUN_ARGS += -it --entrypoint /bin/bash
+shell: AGENT_RUN_ARGS += --mount type=bind,source="$(abspath .)",target=/src -it --entrypoint /bin/bash
+shell: AGENT_CLI_ARGS += -c "SHELL=/bin/bash poetry shell"
 shell: run-docker
 
 run: AGENT_CLI_ARGS += --repository /repo --output /out $(AGENT_ARGS)

@@ -92,7 +92,7 @@ class Linguist:
         with open(linguist_dir / "wc", "w") as wc_file:
             for path in self.files(directories, linguist_dir):
                 run_logged(
-                    ["wc", path],
+                    ["wc", path.relative_to(directories.repository)],
                     log_dir=directories.log_dir,
                     cwd=directories.repository,
                     stdout=wc_file,
@@ -103,7 +103,7 @@ class Linguist:
         with open(linguist_dir / "mime", "w") as mime_file:
             for path in self.files(directories, linguist_dir):
                 run_logged(
-                    ["file", "-i", path],
+                    ["file", "-i", path.relative_to(directories.repository)],
                     log_dir=directories.log_dir,
                     cwd=directories.repository,
                     stdout=mime_file,
