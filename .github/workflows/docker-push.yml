@@ -106,3 +106,19 @@ jobs:
           context: agent
           file: agent/docker/Dockerfile
           load: true
+
+      - name: Build and export to tarball
+        uses: docker/build-push-action@v5
+        with:
+          context: agent
+          file: agent/docker/Dockerfile
+          platforms: linux/amd64 # Add linux/arm64 when scancode becomes compatible with it
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          outputs: type=docker,dest=/tmp/agent.tar
+
+      - name: Compress image
+        run: gzip /tmp/agent.tar
+
+      - name: Upload image to S3
+        run: aws s3 cp /tmp/agent.tar.gz s3://sema-agent-images/${{ steps.meta.outputs.labels['org.opencontainers.image.version'] }}/agent-amd64.tar.gz
