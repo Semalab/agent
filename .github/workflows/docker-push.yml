@@ -99,14 +99,6 @@ jobs:
             type=ref,event=branch
             type=semver,pattern={{version}}
 
-      - name: Build and export to Docker
-        id: build
-        uses: docker/build-push-action@v5
-        with:
-          context: agent
-          file: agent/docker/Dockerfile
-          load: true
-
       - name: Build and export to tarball
         uses: docker/build-push-action@v5
         with:
@@ -121,4 +113,4 @@ jobs:
         run: gzip /tmp/agent.tar
 
       - name: Upload image to S3
-        run: aws s3 cp /tmp/agent.tar.gz s3://sema-agent-images/${{ steps.meta.outputs.labels['org.opencontainers.image.version'] }}/agent-amd64.tar.gz
+        run: aws s3 cp /tmp/agent.tar.gz s3://sema-agent-images/$DOCKER_METADATA_OUTPUT_VERSION/agent-amd64.tar.gz
