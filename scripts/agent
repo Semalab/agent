@@ -79,6 +79,7 @@ main() {
   check-usage "$@"
 
   IMAGE_FILE="out/$VERSION/agent-amd64.tar"
+  CURL_ARGS=(-o "$IMAGE_FILE")
 
   # Sema internal use -- when AWS credentials are available
   S3URI="$BUCKET/$VERSION/"
@@ -88,9 +89,14 @@ main() {
     printf 'Downloading Agent image from %s...\n' "$S3URI"
     aws s3 sync "$S3URI" "out/$VERSION/"
   elif [ -f "download-url.txt" ]; then
+    if [ -f "$IMAGE_FILE" ]; then
+      # Only download the image if it's newer than the existing one
+      CURL_ARGS+=(-z "$IMAGE_FILE")
+    fi
+
     URL=$(cat download-url.txt)
     printf 'Downloading Agent image from %s...\n' "$URL"
-    curl -o "$IMAGE_FILE" -z "$IMAGE_FILE" "$URL"
+    curl "${CURL_ARGS[@]}" "$URL"
   else
     printf 'ERROR: No Agent image found.\n'
     exit 1

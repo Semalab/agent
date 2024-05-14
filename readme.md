@@ -43,13 +43,6 @@ On Windows, if you see an error about being unable to run agent.ps1 because of t
 Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope Process
 ```
 
-You might see a few warning messages from `curl` when downloading the Agent Docker
-image. These are harmless and expected:
-```
-Warning: Illegal date format for -z, --time-cond (and not a file name).
-Warning: Disabling time condition. See curl_getdate(3) for valid date syntax.
-```
-
 ### Email Generated Zip File
 After running these commands, a zip file will have been created under the specified output directory.
 Please send this file to [customers@semasoftware.com](mailto:customers@semasoftware.com) to complete the analysis.

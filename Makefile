@@ -69,6 +69,8 @@ upload-cache:
 
 presign:
 	mkdir -p out
+	@echo Checking if the specified version exists...
+	aws s3 ls s3://$(AGENT_BUCKET)/$(AGENT_VERSION)/agent-amd64.tar
 	aws s3 presign s3://$(AGENT_BUCKET)/$(AGENT_VERSION)/agent-amd64.tar --expires-in $$(( $(EXPIRES_IN_DAYS) * 24 * 60 * 60 )) > out/download-url.txt
 	@echo "Download link saved to out/download-url.txt, expires in $(EXPIRES_IN_DAYS) days"
 
