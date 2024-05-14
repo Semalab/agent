@@ -24,5 +24,7 @@ This command accepts some optional parameters:
 make presign AGENT_VERSION=main EXPIRES_IN_DAYS=7
 ```
 
-- `AGENT_VERSION`: you will usually not need to specify anything other than `main`. This represents the latest released version of Agent.
-- `EXPIRES_IN_DAYS`: the generated download link expires in 7 days, by default. Change this number to specify a different expiration window.
+- `AGENT_VERSION`: you will usually not need to specify anything other than
+  `main`. This represents the latest released version of Agent.
+- `EXPIRES_IN_DAYS`: the generated download link expires in 7 days, by default.
+  Change this number to specify a different expiration window.

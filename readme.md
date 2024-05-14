@@ -16,7 +16,8 @@ contain any source code.
    - If your repository is versioned with something other than Git or SVN, you must
        first convert it to Git.
 3. You must also have `curl` installed. On Windows, `curl.exe` is now included with
-   Windows 10/11; if your system does not include it, you can [download][3] and install it.
+   Windows 10/11; if your system does not include it, you can [download][3] and
+   install it.
 4. You should have received a file named `download-url.txt` from Sema.
 
 ## Usage

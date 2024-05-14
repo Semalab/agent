@@ -71,6 +71,11 @@ def main(repository: Path, output: Path, scantypes: tuple[str, ...]):
         )
         logger = logging.getLogger("agent")
 
+        if Path("version.txt").is_file():
+            with open("version.txt") as f:
+                version = f.read().strip()
+                logger.info(f"Running Agent version: {version}")
+
         for strategy in strategies:
             strategy_name = strategy.__class__.__name__
 

@@ -270,4 +270,7 @@ COPY agent/ agent/
 # install agent and python dependencies
 RUN poetry install
 
+RUN --mount=type=bind,source=.git,target=.git \
+    git describe > version.txt
+
 ENTRYPOINT ["poetry", "run", "cli"]
