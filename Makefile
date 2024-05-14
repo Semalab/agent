@@ -1,12 +1,16 @@
 AGENT_TAG ?= sema-agent
 
+AGENT_BUCKET ?= sema-agent-images
+AGENT_VERSION ?= main
+EXPIRES_IN_DAYS ?= 7
+
 BACKEND_CORE_PATH ?= ../backend-core
 BACKEND_ACTIVITYPERSISTENCE_PATH ?= ../backend-activitypersistence
 BACKEND_COMMITANALYSIS_PATH ?= ../backend-commitanalysis
 BACKEND_GITBLAME_PATH ?= ../backend-gitblame
 AI_ENGINE_PATH ?= ../ai_engine
 
-.PHONY: all build-jars ai-engine-models build run-docker run shell download-cache upload-cache clean lint
+.PHONY: all build-jars ai-engine-models build run-docker run shell download-cache upload-cache presign clean lint
 
 all: run
 
@@ -55,13 +59,18 @@ run: run-docker
 
 download-cache:
 	mkdir -p cache
-	aws s3 sync s3://sema-agent-images/cache/ ./cache/
+	aws s3 sync s3://$(AGENT_BUCKET)/cache/ ./cache/
 
 upload-cache:
 	$(eval CONTAINER_ID=$(shell docker container create $(AGENT_TAG)))
 	docker container cp $(CONTAINER_ID):dependencies/dependency-check/data/. ./cache/dependency-check
 	docker container rm $(CONTAINER_ID)
-	aws s3 sync ./cache/ s3://sema-agent-images/cache/ --delete
+	aws s3 sync ./cache/ s3://$(AGENT_BUCKET)/cache/ --delete
+
+presign:
+	mkdir -p out
+	aws s3 presign s3://$(AGENT_BUCKET)/$(AGENT_VERSION)/agent-amd64.tar --expires-in $$(( $(EXPIRES_IN_DAYS) * 24 * 60 * 60 )) > out/download-url.txt
+	@echo "Download link saved to out/download-url.txt, expires in $(EXPIRES_IN_DAYS) days"
 
 clean:
 	rm -rf out

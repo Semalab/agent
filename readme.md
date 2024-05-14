@@ -15,6 +15,9 @@ contain any source code.
      using [`git svn`][2].
    - If your repository is versioned with something other than Git or SVN, you must
        first convert it to Git.
+3. You must also have `curl` installed. On Windows, `curl.exe` is now included with
+   Windows 10/11; if your system does not include it, you can [download][3] and install it.
+4. You should have received a file named `download-url.txt` from Sema.
 
 ## Usage
 
@@ -22,6 +25,8 @@ Clone your repository to a local directory:
 ```sh
 git clone https://github.com/Semalab/agent.git
 ```
+
+Copy the `download-url.txt` file to the `agent` directory.
 
 Run agent:
 ```sh
@@ -44,3 +49,4 @@ Please send this file to [customers@semasoftware.com](mailto:customers@semasoftw
 
 [1]: https://www.docker.com/products/docker-desktop/
 [2]: https://git-scm.com/docs/git-svn
+[3]: https://curl.se/windows/
