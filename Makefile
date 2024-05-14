@@ -6,7 +6,7 @@ BACKEND_COMMITANALYSIS_PATH ?= ../backend-commitanalysis
 BACKEND_GITBLAME_PATH ?= ../backend-gitblame
 AI_ENGINE_PATH ?= ../ai_engine
 
-.PHONY: all build-jars ai-engine-models build run-docker run shell clean lint
+.PHONY: all build-jars ai-engine-models build run-docker run shell download-cache upload-cache clean lint
 
 all: run
 
@@ -34,7 +34,7 @@ $(eval $(call build-jar,$(BACKEND_COMMITANALYSIS_PATH),out/backend-activitypersi
 $(eval $(call build-jar,$(BACKEND_GITBLAME_PATH),out/backend-core/backend-core.jar))
 build-jars: out/backend-commitanalysis/backend-commitanalysis.jar out/backend-gitblame/backend-gitblame.jar
 
-build: build-jars out/ai_engine.tar.gz ai-engine-models
+build: build-jars out/ai_engine.tar.gz ai-engine-models download-cache
 	# Build and tag the build stages separately, to prevent cleanup with `docker system prune`
 	docker build --platform linux/amd64 --tag $(AGENT_TAG)-build-cppcheck --file ./docker/Dockerfile --target build-cppcheck ./
 	docker build --platform linux/amd64 --tag $(AGENT_TAG)-build-openssl --file ./docker/Dockerfile --target build-openssl ./
@@ -52,6 +52,16 @@ shell: run-docker
 
 run: AGENT_CLI_ARGS += --repository /repo --output /out $(AGENT_ARGS)
 run: run-docker
+
+download-cache:
+	mkdir -p cache
+	aws s3 sync s3://sema-agent-images/cache/ ./cache/
+
+upload-cache:
+	$(eval CONTAINER_ID=$(shell docker container create $(AGENT_TAG)))
+	docker container cp $(CONTAINER_ID):dependencies/dependency-check/data/. ./cache/dependency-check
+	docker container rm $(CONTAINER_ID)
+	aws s3 sync ./cache/ s3://sema-agent-images/cache/ --delete
 
 clean:
 	rm -rf out
