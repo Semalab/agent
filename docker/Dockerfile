@@ -207,9 +207,7 @@ RUN python -m pip install --no-cache-dir \
 # DependencyCheck is added towards the end of the Dockerfile so we don't
 # rebuild all other dependencies when updating the database.
 
-# Comment out this line to bootstrap
-# hadolint ignore=DL3022
-COPY --from=ghcr.io/semalab/agent:latest /dependencies/dependency-check/data/ /dependencies/cache/dependency-check/
+COPY cache/ cache/
 
 # dependency_check: https://github.com/jeremylong/DependencyCheck
 ARG DEPENDENCY_CHECK_VERSION=9.0.7
@@ -271,5 +269,8 @@ COPY agent/ agent/
 
 # install agent and python dependencies
 RUN poetry install
+
+RUN --mount=type=bind,source=.git,target=.git \
+    git describe > version.txt
 
 ENTRYPOINT ["poetry", "run", "cli"]

@@ -14,7 +14,7 @@ def run_logged(args, *runargs, log_dir, **kwargs):
         else:
             kwargs["stderr"] = subprocess.STDOUT
             kwargs["stdout"] = log_file
-        
+
         proc = subprocess.run(args, *runargs, **kwargs)
         log_file.write(f"--- Process {args[0]} exited with code {proc.returncode}\n")
         return proc

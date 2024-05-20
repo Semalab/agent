@@ -50,7 +50,31 @@ if ($dockerOS -ne 'linux') {
   Write-Error 'Please make sure that Docker is installed, running, and is configured to run Linux containers.'
 }
 
-docker pull "ghcr.io/semalab/agent:$Tag"
+$ImageVersion = 'main'
+if ($Tag -ne 'latest') {
+  $ImageVersion = $Tag
+}
+
+$ImageFile = "out\$ImageVersion\agent-amd64.tar"
+New-Item -ItemType Directory -Force -Path (Split-Path $ImageFile) | Out-Null
+
+if (Test-Path download-url.txt) {
+    $ImageURL = Get-Content download-url.txt
+    $curlArgs = '-o', $ImageFIle
+
+    if (Test-Path $ImageFile) {
+      # Only download the image if it's newer than the existing one  
+      $curlArgs += '-z', $ImageFile
+    }
+
+    "Downloading Agent image from $ImageURL..."
+    curl.exe @curlArgs $ImageURL
+} else {
+    Write-Error 'No Agent image found.'
+}
+
+'Loading Agent image...'
+docker load --input $ImageFile
 
 docker run `
   --rm `

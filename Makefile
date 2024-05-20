@@ -1,12 +1,16 @@
 AGENT_TAG ?= sema-agent
 
+AGENT_BUCKET ?= sema-agent-images
+AGENT_VERSION ?= main
+EXPIRES_IN_DAYS ?= 7
+
 BACKEND_CORE_PATH ?= ../backend-core
 BACKEND_ACTIVITYPERSISTENCE_PATH ?= ../backend-activitypersistence
 BACKEND_COMMITANALYSIS_PATH ?= ../backend-commitanalysis
 BACKEND_GITBLAME_PATH ?= ../backend-gitblame
 AI_ENGINE_PATH ?= ../ai_engine
 
-.PHONY: all build-jars ai-engine-models build run-docker run shell clean lint
+.PHONY: all build-jars ai-engine-models build run-docker run shell download-cache upload-cache presign clean lint
 
 all: run
 
@@ -34,7 +38,7 @@ $(eval $(call build-jar,$(BACKEND_COMMITANALYSIS_PATH),out/backend-activitypersi
 $(eval $(call build-jar,$(BACKEND_GITBLAME_PATH),out/backend-core/backend-core.jar))
 build-jars: out/backend-commitanalysis/backend-commitanalysis.jar out/backend-gitblame/backend-gitblame.jar
 
-build: build-jars out/ai_engine.tar.gz ai-engine-models
+build: build-jars out/ai_engine.tar.gz ai-engine-models download-cache
 	# Build and tag the build stages separately, to prevent cleanup with `docker system prune`
 	docker build --platform linux/amd64 --tag $(AGENT_TAG)-build-cppcheck --file ./docker/Dockerfile --target build-cppcheck ./
 	docker build --platform linux/amd64 --tag $(AGENT_TAG)-build-openssl --file ./docker/Dockerfile --target build-openssl ./
@@ -52,6 +56,23 @@ shell: run-docker
 
 run: AGENT_CLI_ARGS += --repository /repo --output /out $(AGENT_ARGS)
 run: run-docker
+
+download-cache:
+	mkdir -p cache
+	aws s3 sync s3://$(AGENT_BUCKET)/cache/ ./cache/
+
+upload-cache:
+	$(eval CONTAINER_ID=$(shell docker container create $(AGENT_TAG)))
+	docker container cp $(CONTAINER_ID):dependencies/dependency-check/data/. ./cache/dependency-check
+	docker container rm $(CONTAINER_ID)
+	aws s3 sync ./cache/ s3://$(AGENT_BUCKET)/cache/ --delete
+
+presign:
+	mkdir -p out
+	@echo Checking if the specified version exists...
+	aws s3 ls s3://$(AGENT_BUCKET)/$(AGENT_VERSION)/agent-amd64.tar
+	aws s3 presign s3://$(AGENT_BUCKET)/$(AGENT_VERSION)/agent-amd64.tar --expires-in $$(( $(EXPIRES_IN_DAYS) * 24 * 60 * 60 )) > out/download-url.txt
+	@echo "Download link saved to out/download-url.txt, expires in $(EXPIRES_IN_DAYS) days"
 
 clean:
 	rm -rf out

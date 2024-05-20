@@ -5,6 +5,8 @@ set -euo pipefail
 REPO=
 OUT=
 TAG=latest
+VERSION=main
+BUCKET=s3://sema-agent-images
 
 print-usage() {
   if [ "$#" != 0 ]; then
@@ -25,7 +27,7 @@ check-usage() {
     print-usage "Expected at least 2 arguments but got $#."
     exit 1
   fi
-  
+
   while :; do
     case $1 in
       -h|-\?|--help)
@@ -35,6 +37,7 @@ check-usage() {
       -t|--tag)
         if [ "$2" ]; then
           TAG=$2
+          VERSION=$TAG
           shift
         else
           print-usage 'ERROR: "--tag" requires a non-empty option argument.'
@@ -75,7 +78,32 @@ abspath() {
 main() {
   check-usage "$@"
 
-  docker pull ghcr.io/semalab/agent:$TAG
+  IMAGE_FILE="out/$VERSION/agent-amd64.tar"
+  CURL_ARGS=(-o "$IMAGE_FILE")
+
+  # Sema internal use -- when AWS credentials are available
+  S3URI="$BUCKET/$VERSION/"
+
+  mkdir -p "out/$VERSION/"
+  if aws s3 ls "$S3URI" > /dev/null 2>&1; then
+    printf 'Downloading Agent image from %s...\n' "$S3URI"
+    aws s3 sync "$S3URI" "out/$VERSION/"
+  elif [ -f "download-url.txt" ]; then
+    if [ -f "$IMAGE_FILE" ]; then
+      # Only download the image if it's newer than the existing one
+      CURL_ARGS+=(-z "$IMAGE_FILE")
+    fi
+
+    URL=$(cat download-url.txt)
+    printf 'Downloading Agent image from %s...\n' "$URL"
+    curl "${CURL_ARGS[@]}" "$URL"
+  else
+    printf 'ERROR: No Agent image found.\n'
+    exit 1
+  fi
+
+  printf 'Loading Agent image...\n'
+  docker load --input "$IMAGE_FILE"
 
   docker run \
     --rm \

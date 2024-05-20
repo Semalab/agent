@@ -7,6 +7,8 @@ on:
       - "[Ss][Qq]-*"
     tags:
       - v*
+  schedule:
+    - cron: "30 9 * * 1"
 
 jobs:
   push:
@@ -21,6 +23,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           path: agent
+          fetch-depth: 0
 
       - name: Checkout backend-core
         uses: actions/checkout@v4
@@ -86,6 +89,15 @@ jobs:
         working-directory: agent
         run: make out/ai_engine.tar.gz ai-engine-models
 
+      - name: Get dependency-check cache
+        working-directory: agent
+        run: make download-cache
+
+      - name: Force update of dependency-check data
+        working-directory: agent/cache
+        if: github.event_name == 'schedule'
+        run: touch .cache
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -99,10 +111,39 @@ jobs:
             type=ref,event=branch
             type=semver,pattern={{version}}
 
-      - name: Build and export to Docker
-        id: build
+      - name: Build and export to tarball
         uses: docker/build-push-action@v5
         with:
           context: agent
           file: agent/docker/Dockerfile
+          platforms: linux/amd64 # Add linux/arm64 when scancode becomes compatible with it
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          outputs: type=docker,dest=/tmp/agent.tar
+
+      # On a schedule, we want to refresh the dependency-check cache, both in
+      # the published image and in the S3 cache for developers.
+      - name: Build and export to Docker
+        id: build
+        uses: docker/build-push-action@v5
+        if: github.event_name == 'schedule'
+        with:
+          context: agent
+          file: agent/docker/Dockerfile
           load: true
+          tags: sema-agent
+
+      - name: Upload dependency-check cache
+        working-directory: agent
+        if: github.event_name == 'schedule'
+        run: make upload-cache
+
+      # No need to compress - gzip -9 compresses by less than 0.5% here - the
+      # blobs are already compressed.
+      # - name: Compress image
+      #   run: gzip /tmp/agent.tar
+
+      - name: Upload image to S3
+        run: aws s3 cp /tmp/agent.tar s3://sema-agent-images/$DOCKER_METADATA_OUTPUT_VERSION/agent-amd64.tar
