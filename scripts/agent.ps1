@@ -60,8 +60,15 @@ New-Item -ItemType Directory -Force -Path (Split-Path $ImageFile) | Out-Null
 
 if (Test-Path download-url.txt) {
     $ImageURL = Get-Content download-url.txt
+    $curlArgs = '-o', $ImageFIle
+
+    if (Test-Path $ImageFile) {
+      # Only download the image if it's newer than the existing one  
+      $curlArgs += '-z', $ImageFile
+    }
+
     "Downloading Agent image from $ImageURL..."
-    curl.exe -o $ImageFile -z $ImageFile $ImageURL
+    curl.exe @curlArgs $ImageURL
 } else {
     Write-Error 'No Agent image found.'
 }
