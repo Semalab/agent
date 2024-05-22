@@ -32,5 +32,5 @@ class PMD:
         if not output_path.is_file():
             return
 
-        with open(output_path) as output_file, open(linters_dir / "pmd.txt", "a") as combined_file:
+        with open(output_path) as output_file, open(linters_dir / "pmd.java.all.txt", "a") as combined_file:
             shutil.copyfileobj(output_file, combined_file)

@@ -207,11 +207,10 @@ RUN python -m pip install --no-cache-dir \
 # DependencyCheck is added towards the end of the Dockerfile so we don't
 # rebuild all other dependencies when updating the database.
 
-COPY cache/ cache/
-
 # dependency_check: https://github.com/jeremylong/DependencyCheck
 ARG DEPENDENCY_CHECK_VERSION=9.0.7
-RUN set -eux; \
+RUN --mount=type=bind,source=cache,target=cache \
+    set -eux; \
     curl -fsSL \
         https://github.com/jeremylong/DependencyCheck/releases/download/v${DEPENDENCY_CHECK_VERSION}/dependency-check-${DEPENDENCY_CHECK_VERSION}-release.zip \
         --output dependency-check.zip \
