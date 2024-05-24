@@ -84,7 +84,7 @@ def main(repository: Path, output: Path, scantypes: tuple[str, ...]):
 
             try:
                 logger.info(f"Running scan: {strategy_name}")
-                strategy.run(directories)
+                # strategy.run(directories)
             except:
                 logger.exception(f"Scan failed: {strategy_name}")
 
@@ -102,9 +102,16 @@ def make_archive(output: Path, repo_name: str, root: Path) -> Path:
     """
     create an archive of `directory` in `{output}/{repo_name}_timestamp.zip`
     """
-
+    print(f"Creating archive for {repo_name}")
     timestamp = datetime.utcnow().strftime("%Y-%m-%d_%H-%M-%S")
-    archive_name = f"{repo_name}_{timestamp}"
+    # archive_name = f"{repo_name}_{timestamp}"
+
+    with open(f"{Linguist.linguist_dir}/git-remotes") as git_remotes_file:
+        project_name = git_remotes_file.readline().split("/")[-1].split(".")[0]
+
+    archive_name = f"{project_name}_{timestamp}"
+
+    print(f"Creating archive: {archive_name}")
     archive_dest = output / archive_name
 
     shutil.make_archive(archive_dest, "zip", root)

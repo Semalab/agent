@@ -109,3 +109,14 @@ class Linguist:
                     stdout=mime_file,
                     check=True
                 )
+    
+    def project_metadata(self, directories, linguist_dir):
+        with open(linguist_dir / "git-remotes", "w") as git_remotes_file:
+            run_logged(
+                ["git", "remote", "--verbose"],
+                log_dir=directories.log_dir,
+                cwd=directories.repository,
+                stdout=git_remotes_file,
+                check=True
+            )
+            
