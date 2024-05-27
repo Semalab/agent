@@ -13,7 +13,7 @@ from agent.strategy.backend_analysis import BackendAnalysis
 from agent.strategy.oss import Dependencies, DependencyCheck, Scancode
 from agent.strategy.quality import Linguist, Linters, TechDebt
 from agent.strategy.ai_engine import GBOM
-
+from agent.strategy.quality.linguist import Linguist
 
 @click.command()
 @click.option(
@@ -84,12 +84,12 @@ def main(repository: Path, output: Path, scantypes: tuple[str, ...]):
 
             try:
                 logger.info(f"Running scan: {strategy_name}")
-                # strategy.run(directories)
+                strategy.run(directories)
             except:
                 logger.exception(f"Scan failed: {strategy_name}")
 
         archive_name = make_archive(
-            output=output, repo_name=repository.name, root=archive_root
+            output=output, repo_name=repository.name, root=archive_root, directories=directories
         )
 
         click.echo(
@@ -98,20 +98,21 @@ def main(repository: Path, output: Path, scantypes: tuple[str, ...]):
         )
 
 
-def make_archive(output: Path, repo_name: str, root: Path) -> Path:
+def make_archive(output: Path, repo_name: str, root: Path, directories: Path) -> Path:
     """
     create an archive of `directory` in `{output}/{repo_name}_timestamp.zip`
     """
-    print(f"Creating archive for {repo_name}")
     timestamp = datetime.utcnow().strftime("%Y-%m-%d_%H-%M-%S")
-    # archive_name = f"{repo_name}_{timestamp}"
 
-    with open(f"{Linguist.linguist_dir}/git-remotes") as git_remotes_file:
-        project_name = git_remotes_file.readline().split("/")[-1].split(".")[0]
+    try :
+        linguist = Linguist()   
+        linguist_dir = directories.mkdir("linguist")
+        with open(f"{linguist_dir}/git-remotes") as git_remotes_file:
+            project_name = git_remotes_file.readline().split("/")[-1].split(".")[0]
+    except Exception as e:
+        project_name = repo_name
 
     archive_name = f"{project_name}_{timestamp}"
-
-    print(f"Creating archive: {archive_name}")
     archive_dest = output / archive_name
 
     shutil.make_archive(archive_dest, "zip", root)

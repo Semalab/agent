@@ -17,6 +17,7 @@ class Linguist:
         self.linguist(directories, linguist_dir)
         self.wc(directories, linguist_dir)
         self.mime(directories, linguist_dir)
+        self.project_metadata(directories, linguist_dir)
 
     def files(self, directories, linguist_dir):
         with open(linguist_dir / "git-ls-tree") as git_ls_tree_file:
