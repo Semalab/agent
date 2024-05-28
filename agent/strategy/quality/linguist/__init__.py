@@ -120,4 +120,3 @@ class Linguist:
                 stdout=git_remotes_file,
                 check=True
             )
-            
