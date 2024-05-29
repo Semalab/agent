@@ -109,7 +109,7 @@ def make_archive(output: Path, repo_name: str, root: Path, directories: Path) ->
         linguist_dir = directories.mkdir("linguist")
         with open(linguist_dir / "git-remotes") as git_remotes_file:
             project_name = Path(urlparse(git_remotes_file.readline().split()[1]).path).stem or repo_name
-    except Exception as e:
+    except Exception:
         project_name = repo_name
 
     archive_name = f"{project_name}_{timestamp}"
