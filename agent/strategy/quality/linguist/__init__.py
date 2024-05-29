@@ -17,6 +17,7 @@ class Linguist:
         self.linguist(directories, linguist_dir)
         self.wc(directories, linguist_dir)
         self.mime(directories, linguist_dir)
+        self.project_metadata(directories, linguist_dir)
 
     def files(self, directories, linguist_dir):
         with open(linguist_dir / "git-ls-tree") as git_ls_tree_file:
@@ -109,3 +110,13 @@ class Linguist:
                     stdout=mime_file,
                     check=True
                 )
+
+    def project_metadata(self, directories, linguist_dir):
+        with open(linguist_dir / "git-remotes", "w") as git_remotes_file:
+            run_logged(
+                ["git", "remote", "--verbose"],
+                log_dir=directories.log_dir,
+                cwd=directories.repository,
+                stdout=git_remotes_file,
+                check=True
+            )

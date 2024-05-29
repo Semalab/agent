@@ -3,6 +3,7 @@ import shutil
 import tempfile
 from datetime import datetime
 from pathlib import Path
+from urllib.parse import urlparse
 
 import click
 from click import ClickException
@@ -89,7 +90,7 @@ def main(repository: Path, output: Path, scantypes: tuple[str, ...]):
                 logger.exception(f"Scan failed: {strategy_name}")
 
         archive_name = make_archive(
-            output=output, repo_name=repository.name, root=archive_root
+            output=output, repo_name=repository.name, root=archive_root, directories=directories
         )
 
         click.echo(
@@ -98,13 +99,20 @@ def main(repository: Path, output: Path, scantypes: tuple[str, ...]):
         )
 
 
-def make_archive(output: Path, repo_name: str, root: Path) -> Path:
+def make_archive(output: Path, repo_name: str, root: Path, directories: Path) -> Path:
     """
     create an archive of `directory` in `{output}/{repo_name}_timestamp.zip`
     """
-
     timestamp = datetime.utcnow().strftime("%Y-%m-%d_%H-%M-%S")
-    archive_name = f"{repo_name}_{timestamp}"
+
+    try:
+        linguist_dir = directories.mkdir("linguist")
+        with open(linguist_dir / "git-remotes") as git_remotes_file:
+            project_name = Path(urlparse(git_remotes_file.readline().split()[1]).path).stem or repo_name
+    except Exception:
+        project_name = repo_name
+
+    archive_name = f"{project_name}_{timestamp}"
     archive_dest = output / archive_name
 
     shutil.make_archive(archive_dest, "zip", root)
