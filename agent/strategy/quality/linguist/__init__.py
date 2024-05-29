@@ -110,7 +110,7 @@ class Linguist:
                     stdout=mime_file,
                     check=True
                 )
-    
+
     def project_metadata(self, directories, linguist_dir):
         with open(linguist_dir / "git-remotes", "w") as git_remotes_file:
             run_logged(

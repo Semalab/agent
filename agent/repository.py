@@ -5,7 +5,8 @@ from enum import Enum
 from pathlib import Path
 from typing import Optional, Self
 
-import click
+
+logger = logging.getLogger(__name__)
 
 
 class VCS(Enum):
@@ -29,13 +30,11 @@ class VCS(Enum):
 
 class Repository:
     def __init__(self, repository: Path):
-        self.name = repository.name
+        self.name = repository.stem
         self.path = Repository.convert(repository)
 
     @classmethod
     def convert(cls, repository: Path) -> Path:
-        logger = logging.getLogger(__name__)
-
         match VCS.detect(repository):
             case VCS.SVN:
                 return cls.svn_to_git(repository)
@@ -50,7 +49,7 @@ class Repository:
 
     @classmethod
     def svn_to_git(cls, repository_svn: Path) -> Path:
-        click.echo(f"converting svn repository '{repository_svn}' to git")
+        logger.info(f"converting svn repository '{repository_svn}' to git")
         repository_git = Path(tempfile.mkdtemp(suffix=f"{repository_svn.name}_git"))
 
         svn_info = subprocess.run(

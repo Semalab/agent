@@ -3,10 +3,10 @@ import shutil
 import tempfile
 from datetime import datetime
 from pathlib import Path
+from urllib.parse import urlparse
 
 import click
 from click import ClickException
-from urllib.parse import urlparse   
 
 from agent.directories import Directories
 from agent.repository import Repository
@@ -14,6 +14,7 @@ from agent.strategy.backend_analysis import BackendAnalysis
 from agent.strategy.oss import Dependencies, DependencyCheck, Scancode
 from agent.strategy.quality import Linguist, Linters, TechDebt
 from agent.strategy.ai_engine import GBOM
+
 
 @click.command()
 @click.option(
@@ -104,11 +105,11 @@ def make_archive(output: Path, repo_name: str, root: Path, directories: Path) ->
     """
     timestamp = datetime.utcnow().strftime("%Y-%m-%d_%H-%M-%S")
 
-    try :
+    try:
         linguist_dir = directories.mkdir("linguist")
-        with open(f"{linguist_dir}/git-remotes") as git_remotes_file:
-            project_name = Path(urlparse(git_remotes_file.readline().split()[1]).path).stem
-    except:
+        with open(linguist_dir / "git-remotes") as git_remotes_file:
+            project_name = Path(urlparse(git_remotes_file.readline().split()[1]).path).stem or repo_name
+    except Exception as e:
         project_name = repo_name
 
     archive_name = f"{project_name}_{timestamp}"
