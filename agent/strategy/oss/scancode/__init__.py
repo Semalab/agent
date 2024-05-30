@@ -17,6 +17,7 @@ class Scancode:
         "--license",
         "--license-score",
         "10",
+        "--strip-root"
     ]
 
     IGNORE = [
@@ -54,11 +55,12 @@ class Scancode:
         run_logged(
             [
                 "scancode",
+                ".",
                 "--json-pp",
                 scancode_dir / "scancode-output.json",
                 *Scancode.ARGS,
                 *ignore,
-                directories.repository,
             ],
-            log_dir=directories.log_dir
+            log_dir=directories.log_dir,
+            cwd = directories.repository
         )
