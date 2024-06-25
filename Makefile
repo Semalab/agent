@@ -31,6 +31,7 @@ out/ai_engine.tar.gz: $(AI_ENGINE_PATH)
 ai-engine-models: $(AI_ENGINE_PATH)/.env.production
 	$(eval include $(AI_ENGINE_PATH)/.env.production)
 	aws s3 sync "s3://sagemaker-ai-code-monitor-experiments/${TUNED_MODEL}" "out/${TUNED_MODEL}"
+	# TODO: cleanup any older models
 
 $(eval $(call build-jar,$(BACKEND_CORE_PATH),))
 $(eval $(call build-jar,$(BACKEND_ACTIVITYPERSISTENCE_PATH),out/backend-core/backend-core.jar))
