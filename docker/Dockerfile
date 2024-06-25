@@ -68,7 +68,7 @@ RUN set -eux; \
 
 RUN echo 'gem: --no-document' >> ~/.gemrc
 
-RUN python -m pip install --no-cache-dir poetry==1.7.1
+RUN python -m pip install --no-cache-dir poetry==1.8.3
 
 # Node.js LTS
 ARG NODE_VERSION=20.12.0
@@ -232,15 +232,14 @@ ADD out/ai_engine.tar.gz /dependencies/ai_engine/
 COPY out/tuned_models/ /dependencies/ai_engine/tuned_models/
 WORKDIR /dependencies/ai_engine
 # hadolint ignore=DL3042
-RUN --mount=type=cache,target=/root/.cache/pip set -eux; \
-    python -m venv .venv; \
-    source .venv/bin/activate; \
-    pip install -r requirements.txt -r code_chunker/requirements.txt; \
+RUN set -eux; \
+    poetry install --no-interaction --no-ansi; \
     cp .env.production .env; \
-    printf '%s\n%s\n%s' \
+    printf '%s\n%s\n%s\n%s' \
         '#!/bin/bash' \
         'cd /dependencies/ai_engine' \
-        '.venv/bin/python main.py "$@"' \
+        'unset VIRTUAL_ENV' \
+        'poetry run python main.py "$@"' \
         > /usr/local/bin/ai_engine \
     ; \
     chmod +x /usr/local/bin/ai_engine
@@ -270,6 +269,6 @@ COPY agent/ agent/
 RUN poetry install
 
 RUN --mount=type=bind,source=.git,target=.git \
-    git describe > version.txt
+    git describe --tags > version.txt
 
 ENTRYPOINT ["poetry", "run", "cli"]
