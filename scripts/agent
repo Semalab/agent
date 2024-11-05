@@ -12,7 +12,7 @@ print-usage() {
   if [ "$#" != 0 ]; then
     printf '%s\n\n' "$@" >&2
   fi
-  printf '%s\n' 'Usage: agent.sh <repository> <output-directory>' >&2
+  printf '%s\n' 'Usage: agent <repository> <output-directory>' >&2
   printf '\n' >&2
   printf '%s\n' 'Runs a Sema scan on the provided <repository>, and outputs a .zip file in ' >&2
   printf '%s\n' '<output-directory>. This .zip file must be sent to Sema for further analysis.' >&2
