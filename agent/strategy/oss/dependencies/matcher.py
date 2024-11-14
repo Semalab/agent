@@ -5,6 +5,10 @@ import re
 # constructed by looking at `rg globsForDefinitionFiles` from within the ort repo,
 # https://github.com/oss-review-toolkit/ort
 PATTERNS = {
+    "Gulp (not ORT)": ["gulpfile.js"],
+    "ant (not ORT)": ["build.xml"],
+    "Rake (not ORT)": ["Rakefile"],
+    "setuptools (not ORT)": ["setup.cfg"],
     "stack": ["stack.yaml"],
     "npm": ["package.json", "pnpm-lock.yaml"],
     "spdxdocumentfile": ["*.spdx.yml", "*.spdx.yaml", "*.spdx.json"],
