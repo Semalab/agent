@@ -60,7 +60,7 @@ def main(repository: Path, output: Path, scantypes: tuple[str, ...]):
             BackendAnalysis("backend-gitblame"),
             GBOM()
         ]
-
+        logger.info(f"Running SQ-5978")
         directories = Directories(repository=repository.path, output=archive_root)
 
         logging.basicConfig(
@@ -84,6 +84,7 @@ def main(repository: Path, output: Path, scantypes: tuple[str, ...]):
                 continue
 
             try:
+                logger.info(f"Running SQ-5978")
                 logger.info(f"Running scan: {strategy_name}")
                 strategy.run(directories)
             except:
