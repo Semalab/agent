@@ -83,7 +83,6 @@ def main(repository: Path, output: Path, scantypes: tuple[str, ...]):
                 continue
 
             try:
-                logger.info(f"Running SQ-5978")
                 logger.info(f"Running scan: {strategy_name}")
                 strategy.run(directories)
             except:
