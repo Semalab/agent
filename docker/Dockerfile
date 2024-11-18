@@ -1,4 +1,4 @@
-FROM buildpack-deps:bookworm as build-cppcheck
+FROM buildpack-deps:bookworm AS build-cppcheck
 
 RUN set -eux; \
     apt-get update; \
@@ -28,7 +28,7 @@ RUN set -eux; \
 
 
 # Build OpenSSL 1.1 for .NET Core 3.1 -- remove when upgrading .NET
-FROM buildpack-deps:bookworm as build-openssl
+FROM buildpack-deps:bookworm AS build-openssl
 
 WORKDIR /root/openssl
 RUN set -eux; \
@@ -208,7 +208,7 @@ RUN python -m pip install --no-cache-dir \
 # rebuild all other dependencies when updating the database.
 
 # dependency_check: https://github.com/jeremylong/DependencyCheck
-ARG DEPENDENCY_CHECK_VERSION=9.0.7
+ARG DEPENDENCY_CHECK_VERSION=10.0.4
 RUN --mount=type=bind,source=cache,target=cache \
     set -eux; \
     curl -fsSL \
@@ -216,7 +216,7 @@ RUN --mount=type=bind,source=cache,target=cache \
         --output dependency-check.zip \
     ; \
     unzip dependency-check.zip; \
-    printf '%s\n%s\n%s' \
+    printf '%s\n' \
         '#!/bin/bash' \
         'cd /dependencies/dependency-check/bin/' \
         './dependency-check.sh "$@"' \
@@ -235,7 +235,7 @@ WORKDIR /dependencies/ai_engine
 RUN set -eux; \
     poetry install --no-interaction --no-ansi; \
     cp .env.production .env; \
-    printf '%s\n%s\n%s\n%s' \
+    printf '%s\n' \
         '#!/bin/bash' \
         'cd /dependencies/ai_engine' \
         'unset VIRTUAL_ENV' \
