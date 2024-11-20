@@ -10,7 +10,7 @@ PATTERNS = {
     "Rake (not ORT)": ["Rakefile"],
     "setuptools (not ORT)": ["setup.cfg"],
     "stack": ["stack.yaml"],
-    "npm": ["package.json", "pnpm-lock.yaml"],
+    "npm": ["package.json", "pnpm-lock.yaml","package-lock.json"],
     "spdxdocumentfile": ["*.spdx.yml", "*.spdx.yaml", "*.spdx.json"],
     "cocoapods": ["Podfile"],
     "bundler": ["Gemfile", "Gemfile.lock"],
