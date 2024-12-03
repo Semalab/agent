@@ -1,4 +1,4 @@
-FROM buildpack-deps:bookworm as build-cppcheck
+FROM buildpack-deps:bookworm AS build-cppcheck
 
 RUN set -eux; \
     apt-get update; \
@@ -28,7 +28,7 @@ RUN set -eux; \
 
 
 # Build OpenSSL 1.1 for .NET Core 3.1 -- remove when upgrading .NET
-FROM buildpack-deps:bookworm as build-openssl
+FROM buildpack-deps:bookworm AS build-openssl
 
 WORKDIR /root/openssl
 RUN set -eux; \
@@ -68,7 +68,7 @@ RUN set -eux; \
 
 RUN echo 'gem: --no-document' >> ~/.gemrc
 
-RUN python -m pip install --no-cache-dir poetry==1.7.1
+RUN python -m pip install --no-cache-dir poetry==1.8.3
 
 # Node.js LTS
 ARG NODE_VERSION=20.12.0
@@ -208,7 +208,7 @@ RUN python -m pip install --no-cache-dir \
 # rebuild all other dependencies when updating the database.
 
 # dependency_check: https://github.com/jeremylong/DependencyCheck
-ARG DEPENDENCY_CHECK_VERSION=9.0.7
+ARG DEPENDENCY_CHECK_VERSION=10.0.4
 RUN --mount=type=bind,source=cache,target=cache \
     set -eux; \
     curl -fsSL \
@@ -216,7 +216,7 @@ RUN --mount=type=bind,source=cache,target=cache \
         --output dependency-check.zip \
     ; \
     unzip dependency-check.zip; \
-    printf '%s\n%s\n%s' \
+    printf '%s\n' \
         '#!/bin/bash' \
         'cd /dependencies/dependency-check/bin/' \
         './dependency-check.sh "$@"' \
@@ -232,15 +232,14 @@ ADD out/ai_engine.tar.gz /dependencies/ai_engine/
 COPY out/tuned_models/ /dependencies/ai_engine/tuned_models/
 WORKDIR /dependencies/ai_engine
 # hadolint ignore=DL3042
-RUN --mount=type=cache,target=/root/.cache/pip set -eux; \
-    python -m venv .venv; \
-    source .venv/bin/activate; \
-    pip install -r requirements.txt -r code_chunker/requirements.txt; \
+RUN set -eux; \
+    poetry install --no-interaction --no-ansi; \
     cp .env.production .env; \
-    printf '%s\n%s\n%s' \
+    printf '%s\n' \
         '#!/bin/bash' \
         'cd /dependencies/ai_engine' \
-        '.venv/bin/python main.py "$@"' \
+        'unset VIRTUAL_ENV' \
+        'poetry run python main.py "$@"' \
         > /usr/local/bin/ai_engine \
     ; \
     chmod +x /usr/local/bin/ai_engine
@@ -270,6 +269,6 @@ COPY agent/ agent/
 RUN poetry install
 
 RUN --mount=type=bind,source=.git,target=.git \
-    git describe > version.txt
+    git describe --tags > version.txt
 
 ENTRYPOINT ["poetry", "run", "cli"]
